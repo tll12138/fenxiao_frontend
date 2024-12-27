@@ -1,0 +1,17 @@
+export  interface Goods {
+  id: number,
+  skuId: string,
+  skuName: string,
+  saleType?: number,
+  weight:number,
+  category: string,
+  price:number,
+  salePrice?: number,
+  count?: number,
+  priceAmount?: number,
+  goodsWeight?: number,
+  otherAvailCount: number,
+  returnCount?: number,
+  returnPrice?: number,
+  returnAmount?: number,
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch Edge against localhost",
+      "url": "http://localhost",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Script: dev-server",
+      "request": "launch",
+      "command": "npm run dev-server",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
