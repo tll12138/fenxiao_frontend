@@ -231,20 +231,22 @@ export enum DICT_TYPE {
 
   // ========== AI - 分销模块  ==========
   FX_BELONG = 'fx_belong', //业务归属
-  FX_CUSTOMER_LEVEL = 'fx_customer_level',
-  YES_NO = 'yes_no',
-  FX_CUSTOMER_DISTRIBUTE = 'fx_customer_distribute',
-  FX_BRAND = 'fx_brand',
-  FX_CUSTOMER_TYPE = 'fx_customer_type',
-  FX_ORDER_STATUS = 'fx_order_status',
-  FX_SALE_TYPE= 'fx_sale_type',
-  FX_IS_2_ERP = 'fx_is_2_erp',
-  FX_SEND_TYPE = 'fx_send_type',
-  FX_CHANNEL = 'fx_channel',
-  FX_DETAIL_RETURN_TYPE = 'fx_detail_return_type',
-  FX_REPOSITORY_TYPE = 'fx_repository_type',
-  FX_WL = 'fx_wl',
-  FX_RETURN_TYPE = 'fx_return_type',
-  FX_BUSINESS_TYPE = 'fx_business_type',
-  FX_WAREHOUSE_FEATURE = 'fx_warehouse_feature',
+  FX_CUSTOMER_LEVEL = 'fx_customer_level',//FX 客商等级
+  YES_NO = 'yes_no',//是否
+  FX_CUSTOMER_DISTRIBUTE = 'fx_customer_distribute',//FX 分销商属性
+  FX_BRAND = 'fx_brand',//品牌
+  FX_CUSTOMER_TYPE = 'fx_customer_type',//FX 客户类型
+  FX_ORDER_STATUS = 'fx_order_status',//订单状态
+  FX_SALE_TYPE= 'fx_sale_type',//FX 销售类型
+  FX_IS_2_ERP = 'fx_is_2_erp',//FX 是否传ERP
+  FX_SEND_TYPE = 'fx_send_type',//FX 发货类型
+  FX_CHANNEL = 'fx_channel',//FX 渠道
+  FX_DETAIL_RETURN_TYPE = 'fx_detail_return_type',//FX 明细销售类型
+  FX_REPOSITORY_TYPE = 'fx_repository_type',//FX 发货仓库类型
+  FX_WL = 'fx_wl',//FX 物流公司
+  FX_RETURN_TYPE = 'fx_return_type',//FX 退货类型
+  FX_BUSINESS_TYPE = 'fx_business_type',//FX 退货业务类型
+  FX_WAREHOUSE_FEATURE = 'fx_warehouse_feature',//FX 仓库功能
+  FX_BUSINESS_ENTITY = 'fx_business_entity',//FX 业务实体
+  FX_RESPOSITORY_CHANNEL = 'fx_respository_channel'//FX 发货仓库渠道
 }

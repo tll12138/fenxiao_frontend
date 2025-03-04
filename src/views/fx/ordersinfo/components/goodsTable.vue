@@ -91,18 +91,29 @@ import { ElTable } from 'element-plus'
 import {CustomerInfoVO} from "@/api/fx/customerinfo";
 import {ref} from "vue";
 import {Goods} from "@/views/fx/ordersinfo/data";
+import {GoodsArchivesApi} from "@/api/fx/goodsarchives";
 
 defineOptions({ name: 'GoodsTable' })
+interface Props {
+  warehouseCode: string; // 保持属性名全小写
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  warehouseCode: ""
+});
+// 初始化时同步 Props 到 queryParams
+onMounted(() => {
+  queryParams.wareHouseCode = props.warehouseCode; // [!code ++]
+});
+
 const total = ref() // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  distributorId: undefined,
-  distributorName: undefined,
-  distributorLevel: undefined,
-  subCompany: undefined,
-  belongTo: undefined,
+  skuId: undefined,
+  skuName: undefined,
   customerChannelDistribute: undefined,
+  warehouseCode: props.warehouseCode, // 初始值来自 props
 })
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -111,65 +122,73 @@ const goodsList = ref<Goods[]>([])
 const current = ref()
 
 const handleOpen = async (index) => {
-  console.log("open...")
-  dialogVisible.value = true
+  queryParams.wareHouseCode = props.warehouseCode; // 确保最新值
   dialogTitle.value = '选择商品'
   current.value = index
-  // goodsList.value = props.list
   await getList()
+  dialogVisible.value = true
+  console.log('[warehouseCode]', queryParams.warehouseCode);
 }
+watch(
+  () => props.warehouseCode,
+  (newVal) => {
+    console.log("newVal...",newVal)
+    queryParams.wareHouseCode = newVal;
+    console.log("queryParams.wareHouseCode...",queryParams.wareHouseCode)
+    if (dialogVisible.value) getList();
+  }
+);
+onMounted(() => {
+  if (props.warehouseCode) {
+    queryParams.warehouseCode = props.warehouseCode;
+    getList(); // 组件挂载时立即加载
+  }
+})
+
+// watch(
+//   () => props.warehouseCode,
+//   (newVal) => {
+//     console.log('[子组件 Props 更新]', newVal);
+//     queryParams.warehouseCode = newVal;
+//     if (dialogVisible.value) getList(); // 仅在弹窗打开时请求
+//   },
+//   { immediate: true } // 立即执行一次
+// );
 
 const getList = async () => {
-  formLoading.value = true
+  formLoading.value = true;
   try {
-    // const data = await CustomerInfoApi.getCustomerInfoPage(queryParams)
-    // goodsList.value = data.list
-    // total.value = data.total
-    goodsList.value  = [
-      {
-        id: 1,
-        skuId: '1117',
-        skuName: "福来匀净美肤精华油-C",
-        weight: 0.125,
-        category: "125ml",
-        price: 85.00,
-        salePrice: 85.00,
-        otherAvailCount: 119
-      },
-      {
-        id: 2,
-        skuId: '1100',
-        skuName: "福来匀净美肤精华油",
-        weight: 0.015,
-        category: "15ml",
-        price: 85.00,
-        salePrice: 85.00,
-        otherAvailCount: 30
-      },
-      {
-        id: 3,
-        skuId: 'D7535',
-        skuName: "E-CHANGE日落晚风舒缓香氛沐浴油",
-        weight: 0.26,
-        category: "260ml",
-        price: 45.00,
-        salePrice: 45.00,
-        otherAvailCount: 50
-      },
-      {
-        id: 4,
-        skuId: 'D7568',
-        skuName: "E-CHANGE月初赤霞透亮香氛润肤乳",
-        weight: 0.26,
-        category: "260ml",
-        price: 45.00,
-        salePrice: 45.00,
-        otherAvailCount: 200
-      }
-    ]
-    total.value = 4
+    // 调用 API 并等待响应
+    const response = await GoodsArchivesApi.getGoodsArchivesPage({
+      pageNo: queryParams.pageNo,
+      pageSize: queryParams.pageSize,
+      enabled: 1,
+      skuId: queryParams.skuId,
+      skuName: queryParams.skuName,
+      warehouseCode: queryParams.warehouseCode
+    });
+
+    // 调试输出：检查 API 返回数据结构
+    console.log('[API Response]', response);
+
+    // 正确映射数据到 goodsList
+    goodsList.value = response.list.map((item: any) => ({
+      id: item.id,
+      skuId: item.skuId,
+      skuName: item.name,
+      weight: item.weight,
+      category: item.category,
+      price: item.salePrice,
+    }));
+
+    total.value = response.total;
+
+  } catch (error) {
+    console.error('[加载商品失败]', error);
+    // 可选：显示错误提示
+    ElMessage.error('商品数据加载失败，请稍后重试');
   } finally {
-    formLoading.value = false
+    formLoading.value = false;
   }
 }
 const handleQuery = () => {

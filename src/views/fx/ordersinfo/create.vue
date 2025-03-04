@@ -110,6 +110,8 @@
                 </el-select>
               </el-form-item>
             </ElCol>
+            <GoodsTable :warehouse-code="formData.warehouseCode" />
+
 
             <ElCol v-if="formData.customerLevel == 2" :offset="1" :span="15">
               <el-form-item label="大客户地址" prop="bigCustomerAddress">
@@ -317,14 +319,13 @@ import {
   Paperclip,
   MapLocation
 } from '@element-plus/icons-vue'
+import GoodsTable from "@/views/fx/ordersinfo/components/goodsTable.vue";
 /** 销售单 表单 */
 defineOptions({ name: 'OrdersInfoForm' })
 
 const message = useMessage() // 消息弹窗
 const { delView } = useTagsViewStore() // 视图操作
 const { push, currentRoute } = useRouter() // 路由
-
-
 /**
  * 表单相关变量
  */
@@ -722,6 +723,9 @@ const handleWarehouseChange = (val: number) => {
     formData.value.warehouseCode = item.value
     console.log(formData.value)
   }
+  nextTick(() => {
+    // 确保值同步到子组件
+  });
 }
 
 /**

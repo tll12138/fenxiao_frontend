@@ -35,10 +35,10 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="是否冻结" prop="isFreeze">
+      <el-form-item label="是否可用" prop="isFreeze">
         <el-select
           v-model="queryParams.isFreeze"
-          placeholder="请选择是否冻结"
+          placeholder="请选择是否可用"
           clearable
           class="!w-240px"
         >
@@ -134,7 +134,7 @@
           <dict-span-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isCooperate" />
         </template>
       </el-table-column>
-      <el-table-column label="是否冻结" align="center" prop="isFreeze">
+      <el-table-column label="是否可用" align="center" prop="isFreeze">
         <template #default="scope">
           <dict-span-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isFreeze" />
         </template>
@@ -215,6 +215,7 @@ import {SubCompany} from "@/views/fx/customerinfo/data";
 /** 分销商基础信息 列表 */
 defineOptions({ name: 'CustomerInfo' })
 import { ref } from 'vue';
+import {GoodsArchivesApi} from "@/api/fx/goodsarchives";
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 const loading = ref(true) // 列表的加载中
@@ -231,7 +232,7 @@ const queryParams = reactive({
   belongTo: undefined,
   distributorLevel: undefined,
   isCooperate: undefined,
-  isFreeze: 0,
+  isFreeze: 1,
   customerChannelDistribute: undefined,
   brand: undefined,
   customerType: undefined,
@@ -262,7 +263,7 @@ const getList = async () => {
 }
 
 const getCompanyList = async () => {
-  subCompanyList.value = await SubCompanyInfoApi.getSubCompanyInfoList()
+  subCompanyList.value = await GoodsArchivesApi.getGoodsArchivesPage()
   subCompanyList.value.forEach((item) => {
     companyMap.value.set(item.id, item.companyName as string)
   })
