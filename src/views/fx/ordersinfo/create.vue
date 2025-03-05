@@ -110,7 +110,6 @@
                 </el-select>
               </el-form-item>
             </ElCol>
-            <GoodsTable :warehouse-code="formData.warehouseCode" />
 
 
             <ElCol v-if="formData.customerLevel == 2" :offset="1" :span="15">
@@ -197,7 +196,10 @@
           </ElRow>
 
           <!-- 子表的表单 -->
-          <OrdersDetailForm ref="ordersDetailFormRef" :repository-id="formData.warehouse" />
+          <OrdersDetailForm
+            ref="ordersDetailFormRef"
+            :repository-code="formData.warehouseCode"
+          />
 
         </el-form>
       </ContentWrap>
@@ -414,7 +416,6 @@ const needHandleAddress = ref<string>('')
  */
 const ordersDetailFormRef = ref()
 const distributorName = ref('')
-
 
 /**
  * 子表单
@@ -714,18 +715,9 @@ const queryWarehouseList = async () => {
   })
 }
 const handleWarehouseChange = (val: number) => {
-  console.log(val)
-  const item = warehouseOptions.value.find(option => option.value === val);
-  console.log(item)
-  console.log(item.label)
-  if (item.label && item.value) {
-    formData.value.warehouse = item.label
-    formData.value.warehouseCode = item.value
-    console.log(formData.value)
-  }
-  nextTick(() => {
-    // 确保值同步到子组件
-  });
+  console.log("warehouseCode:",val)
+  formData.value.warehouseCode = val;
+  formData.value.warehouse = warehouseOptions.value.find(opt => opt.value === val)?.label;
 }
 
 /**

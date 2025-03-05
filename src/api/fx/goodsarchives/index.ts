@@ -41,6 +41,11 @@ export const GoodsArchivesApi = {
     return await request.get({ url: `/fx/goods-archives/page`, params })
   },
 
+  // 查询分销商品资料分页
+  getGoodsArchivesByWarehouseCodePage: async (params: any) => {
+    return await request.get({ url: `/fx/goods-archives/page-warehouseCode`, params })
+  },
+
   // 查询分销商品资料详情
   getGoodsArchives: async (id: number) => {
     return await request.get({ url: `/fx/goods-archives/get?id=` + id })
@@ -65,4 +70,4 @@ export const GoodsArchivesApi = {
   exportGoodsArchives: async (params) => {
     return await request.download({ url: `/fx/goods-archives/export-excel`, params })
   },
-}
+}

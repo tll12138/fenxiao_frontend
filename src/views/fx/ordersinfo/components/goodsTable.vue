@@ -73,7 +73,7 @@
       <el-table-column property="category" label="规格" width="200"/>
       <el-table-column property="weight" label="商品净重(kg)" width="200"/>
       <el-table-column property="price" label="价格(单价)" />
-      <el-table-column property="otherAvailCount" label="可配货库存"/>
+      <el-table-column property="inventory" label="可配货库存"/>
     </el-table>
     <Pagination
       :total="total"
@@ -94,18 +94,9 @@ import {Goods} from "@/views/fx/ordersinfo/data";
 import {GoodsArchivesApi} from "@/api/fx/goodsarchives";
 
 defineOptions({ name: 'GoodsTable' })
-interface Props {
-  warehouseCode: string; // 保持属性名全小写
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  warehouseCode: ""
+const props = defineProps({
+  repositoryCode: String
 });
-// 初始化时同步 Props 到 queryParams
-onMounted(() => {
-  queryParams.wareHouseCode = props.warehouseCode; // [!code ++]
-});
-
 const total = ref() // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
@@ -113,7 +104,6 @@ const queryParams = reactive({
   skuId: undefined,
   skuName: undefined,
   customerChannelDistribute: undefined,
-  warehouseCode: props.warehouseCode, // 初始值来自 props
 })
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -122,50 +112,24 @@ const goodsList = ref<Goods[]>([])
 const current = ref()
 
 const handleOpen = async (index) => {
-  queryParams.wareHouseCode = props.warehouseCode; // 确保最新值
   dialogTitle.value = '选择商品'
   current.value = index
   await getList()
   dialogVisible.value = true
-  console.log('[warehouseCode]', queryParams.warehouseCode);
 }
-watch(
-  () => props.warehouseCode,
-  (newVal) => {
-    console.log("newVal...",newVal)
-    queryParams.wareHouseCode = newVal;
-    console.log("queryParams.wareHouseCode...",queryParams.wareHouseCode)
-    if (dialogVisible.value) getList();
-  }
-);
-onMounted(() => {
-  if (props.warehouseCode) {
-    queryParams.warehouseCode = props.warehouseCode;
-    getList(); // 组件挂载时立即加载
-  }
-})
 
-// watch(
-//   () => props.warehouseCode,
-//   (newVal) => {
-//     console.log('[子组件 Props 更新]', newVal);
-//     queryParams.warehouseCode = newVal;
-//     if (dialogVisible.value) getList(); // 仅在弹窗打开时请求
-//   },
-//   { immediate: true } // 立即执行一次
-// );
 
 const getList = async () => {
   formLoading.value = true;
   try {
     // 调用 API 并等待响应
-    const response = await GoodsArchivesApi.getGoodsArchivesPage({
+    const response = await GoodsArchivesApi.getGoodsArchivesByWarehouseCodePage({
       pageNo: queryParams.pageNo,
       pageSize: queryParams.pageSize,
       enabled: 1,
       skuId: queryParams.skuId,
       skuName: queryParams.skuName,
-      warehouseCode: queryParams.warehouseCode
+      warehouseCode: props.repositoryCode
     });
 
     // 调试输出：检查 API 返回数据结构
@@ -179,6 +143,7 @@ const getList = async () => {
       weight: item.weight,
       category: item.category,
       price: item.salePrice,
+      inventory: item.inventory,
     }));
 
     total.value = response.total;

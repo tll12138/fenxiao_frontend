@@ -88,7 +88,7 @@
         </el-form-item>
       </template>
     </el-table-column>
-    <el-table-column label="可配货库存" width="80" prop="otherAvailCount"/>
+    <el-table-column label="可配货库存" width="80" prop="inventory"/>
     <el-table-column label="数量" width="80" prop="count">
       <template #default="{ row, $index }">
         <el-form-item v-if="row.skuId" :prop="`${$index}.count`" :rules="formRules.count" class="mb-0px!">
@@ -117,7 +117,11 @@
     </el-table-column>
   </el-table>
   </el-form>
-  <GoodsTable ref="goodsTableRef"  @click-row="handleClickGoodsRow" />
+  <GoodsTable
+    ref="goodsTableRef"
+    :repository-code="repositoryCode"
+  @click-row="handleClickGoodsRow"
+  />
 </template>
 <script setup lang="ts">
 import {getIntDictOptions, DICT_TYPE} from '@/utils/dict'
@@ -136,7 +140,7 @@ const formData = ref<Goods[]>([])
 const validateCount = (rule, value, callback) => {
   console.log(rule, value)
   const currentRow = formData.value[parseInt(rule.field.split('.')[0])]; // 获取当前行数据
-  if (value > currentRow.otherAvailCount) {
+  if (value > currentRow.inventory) {
     callback(new Error(`大于可配货库存`));
   } else {
     callback();
@@ -187,7 +191,12 @@ const totalCount = computed(() => {
     }
   }, 0)
 })
-
+const props = defineProps({
+  repositoryCode: {
+    type: String,
+    default: undefined
+  }
+});
 /** 获取商品列表 */
 const goodsTableRef = ref()
 const goodsSelectRef = ref()
@@ -201,7 +210,7 @@ const goodsList = [
     category: "125ml",
     price: 85.00,
     salePrice: 85.00,
-    otherAvailCount: 50
+    inventory: 50
   },
   {
     id: 2,
@@ -212,7 +221,7 @@ const goodsList = [
     category: "15ml",
     price: 85.00,
     salePrice: 85.00,
-    otherAvailCount: 119
+    inventory: 119
   },
   {
     id: 3,
@@ -223,7 +232,7 @@ const goodsList = [
     category: "260ml",
     price: 45.00,
     salePrice: 45.00,
-    otherAvailCount: 80
+    inventory: 80
   },
   {
     id: 4,
@@ -234,7 +243,7 @@ const goodsList = [
     category: "260ml",
     price: 45.00,
     salePrice: 45.00,
-    otherAvailCount: 200
+    inventory: 200
   },
 ]
 const goodsMap = new Map<number, object>()
@@ -246,6 +255,10 @@ goodsList.forEach(item => {
 
 /** 新增按钮操作 */
 const open = () => {
+  if (!props.repositoryCode) {
+    ElMessage.warning('请先选择发货仓库')
+    return false // 返回校验状态
+  }
   formData.value.push({} as Goods)
   const current = formData.value.length - 1
   nextTick(() => {
@@ -274,7 +287,7 @@ const resetForm = () => {
     count: undefined,
     priceAmount: undefined,
     goodsWeight: undefined,
-    otherAvailCount: undefined
+    inventory: undefined
   })
 }
 
@@ -335,17 +348,17 @@ const getSummaries = (param: SummaryMethodProps<Goods>) => {
         '合计',
       ]);
       return;
-    }else if (index === 8){
+    }else if (index === 7){
       sums[index] =  h('div', { style: { textAlign: 'center' } }, [
         totalCount.value,
       ]);
       return;
-    }else if (index === 9){
+    }else if (index === 8){
       sums[index] =  h('div', { style: { textAlign: 'center' } }, [
         totalAmount.value,
       ]);
       return;
-    }else if (index == 10){
+    }else if (index == 9){
       sums[index] =  h('div', { style: { textAlign: 'center' } }, [
         totalWeight.value?.toFixed(2),
       ]);
