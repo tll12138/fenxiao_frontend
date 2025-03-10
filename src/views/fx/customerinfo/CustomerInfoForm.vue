@@ -27,10 +27,11 @@
           <el-form-item label="所属子公司" prop="subCompany">
             <el-select v-model="formData.subCompany" placeholder="请选择子公司" clearable filterable style="width: 240px" >
               <el-option
-                v-for="item in subCompanyList"
-                :key="item.id"
-                :label="item.companyName"
-                :value="item.id"/>
+                  v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+              />
             </el-select>
           </el-form-item>
         </ElCol>
@@ -203,9 +204,9 @@ const formRules = reactive({
   customerChannelDistribute: [
     { required: true, message: '请选择客户渠道属性', trigger: 'blur' },
   ],
-  customerType: [
-    { required: true, message: '请选择客户类型', trigger: 'blur' },
-  ],
+  // customerType: [
+  //   { required: true, message: '请选择客户类型', trigger: 'blur' },
+  // ],
   isExcessOrder: [
     { required: true, message: '请选择是否允许超额提货', trigger: 'blur' },
   ],

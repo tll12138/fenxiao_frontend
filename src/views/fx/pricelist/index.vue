@@ -9,13 +9,22 @@
       label-width="68px"
     >
       <el-form-item label="客户" prop="customer">
-        <el-input
-          v-model="queryParams.customer"
-          placeholder="请输入客户"
-          clearable
-          @keyup.enter="handleQuery"
+        <el-select
+          ref="selectRef"
           class="!w-240px"
-        />
+          :suffix-icon="ConsigneeIcon as any"
+          v-model="queryParams.customer"
+          @change="handleChange"
+          placeholder="请选择客户"
+          filterable
+          clearable>
+          <el-option
+            v-for="dict in consigneeList"
+            :key="dict.id"
+            :label="dict.distributorName"
+            :value="dict.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="产品编码" prop="skuId">
         <el-input
@@ -72,13 +81,19 @@
         />
       </el-form-item>
       <el-form-item label="品牌" prop="brand">
-        <el-input
+        <el-select
           v-model="queryParams.brand"
-          placeholder="请输入品牌"
+          placeholder="请选择品牌"
           clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BRAND)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
@@ -126,7 +141,12 @@
       <el-table-column label="客户等级" align="center" prop="cLevel" />
       <el-table-column label="产品名称" align="center" prop="name" />
       <el-table-column label="是否基础类型" align="center" prop="isNormal" />
-      <el-table-column label="品牌" align="center" prop="brand" />
+      <el-table-column label="品牌" align="center" prop="brand" >
+        <template #default="scope">
+          <dict-span-tag v-if="scope.row.brand" :type="DICT_TYPE.FX_BRAND" :value="scope.row.brand" />
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -173,6 +193,10 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { PricelistApi, PricelistVO } from '@/api/fx/pricelist'
 import PricelistForm from './PricelistForm.vue'
+import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from "@/utils/dict";
+import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
+import {ref} from "vue";
+import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 分销价格对照 列表 */
 defineOptions({ name: 'Pricelist' })
@@ -180,6 +204,10 @@ defineOptions({ name: 'Pricelist' })
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
+const consigneeList = ref<CustomerInfoVO[]>() //客户数据
+const consigneeMap = ref<Map<number, CustomerInfoVO>>(new Map<number, CustomerInfoVO>())
+const consigneeTotal = ref<number>() //客户数据
+const selectRef = ref()
 const loading = ref(true) // 列表的加载中
 const list = ref<PricelistVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
@@ -257,8 +285,26 @@ const handleExport = async () => {
   }
 }
 
+const handleChange = (row) => {
+  queryParams.customer = row.id
+}
+
+/**
+ * 获取客户列表
+ */
+const getConsigneeList = async () => {
+  CustomerInfoApi.getCustomerInfoPage({pageNo: 1, pageSize: 100}).then((res) => {
+    consigneeList.value = res.list
+    consigneeMap.value = res.list.reduce((map, item) => {
+      map[item.id] = item;
+      return map;
+    }, new Map());
+    consigneeTotal.value = res.total
+  })
+}
 /** 初始化 **/
 onMounted(() => {
   getList()
+  getConsigneeList()
 })
 </script>

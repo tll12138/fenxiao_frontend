@@ -29,7 +29,14 @@
         <el-input v-model="formData.isNormal" placeholder="请输入是否基础类型" />
       </el-form-item>
       <el-form-item label="品牌" prop="brand">
-        <el-input v-model="formData.brand" placeholder="请输入品牌" />
+        <el-select v-model="formData.brand" placeholder="请输入品牌" clearable filterable style="width: 240px" >
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.FX_BRAND)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
@@ -48,6 +55,7 @@
 </template>
 <script setup lang="ts">
 import { PricelistApi, PricelistVO } from '@/api/fx/pricelist'
+import {DICT_TYPE, getIntDictOptions} from "@/utils/dict";
 
 /** 分销价格对照 表单 */
 defineOptions({ name: 'PricelistForm' })

@@ -67,7 +67,10 @@ export const CustomerInfoApi = {
   getCustomerInfoDetailPage: async (params: any) => {
     return await request.get({ url: `/fx/customer-info/page/detail`, params })
   },
-
+  // 查询分销商基础信息分页
+  getAllCustomerInfo: async (params: any) => {
+    return await request.get({ url: `/fx/customer-info/getAll`, params })
+  },
 
   // 查询分销商基础信息详情
   getCustomerInfo: async (id: number) => {

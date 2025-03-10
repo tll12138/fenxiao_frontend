@@ -51,13 +51,19 @@
         </el-select>
       </el-form-item>
       <el-form-item label="所属子公司" prop="subCompany">
-        <el-select v-model="queryParams.subCompany" placeholder="请选择子公司" clearable filterable style="width: 240px">
-          <el-option
-            v-for="item in subCompanyList"
-            :key="item.id"
-            :label="item.companyName"
-            :value="item.id"/>
-        </el-select>
+          <el-select
+              v-model="queryParams.subCompany"
+              placeholder="请选择子公司"
+              clearable
+              class="!w-240px"
+          >
+            <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
       </el-form-item>
       <el-form-item label="业务归属" prop="belongTo">
         <el-select
@@ -121,7 +127,7 @@
       <el-table-column label="分销商名称" align="center" prop="distributorName" />
       <el-table-column label="所属子公司" align="center" prop="subCompany" width="220px">
         <template #default="scope">
-          {{companyMap?.get(scope.row.subCompany)}}
+          <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.subCompany" />
         </template>
       </el-table-column>
       <el-table-column label="分销商等级" align="center" prop="distributorLevel">
@@ -177,14 +183,6 @@
               v-hasPermi="['fx:customer-info:query']"
           >
             查看详情
-          </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-            v-hasPermi="['fx:customer-info:delete']"
-          >
-            删除
           </el-button>
         </template>
       </el-table-column>
@@ -263,10 +261,10 @@ const getList = async () => {
 }
 
 const getCompanyList = async () => {
-  subCompanyList.value = await GoodsArchivesApi.getGoodsArchivesPage()
-  subCompanyList.value.forEach((item) => {
-    companyMap.value.set(item.id, item.companyName as string)
-  })
+  // subCompanyList.value = await GoodsArchivesApi.getGoodsArchivesPage()
+  // subCompanyList.value.forEach((item) => {
+  //   companyMap.value.set(item.id, item.companyName as string)
+  // })
 }
 
 /** 搜索按钮操作 */
@@ -320,7 +318,7 @@ const handleExport = async () => {
 
 /** 初始化 **/
 onMounted(() => {
-  getCompanyList()
+  // getCompanyList()
   getList()
 })
 </script>

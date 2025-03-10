@@ -483,6 +483,7 @@ const queryParams = reactive({
   isGroup: undefined,
   createTime: [],
   autoId: undefined,
+  warehouseCode: 1,
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

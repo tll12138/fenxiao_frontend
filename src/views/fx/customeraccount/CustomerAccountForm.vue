@@ -11,14 +11,21 @@
         <el-select ref="selectRef" class="search-select" :suffix-icon="ConsigneeIcon as any"
                    v-model="formData.distributorId" @change="handleChange" placeholder="请选择分销商" filterable clearable>
           <el-option v-for="dict in consigneeList" :key="dict.id" :label="dict.distributorName"
-                     :value="dict.id" />
+                     :value="dict.distributorNum" />
         </el-select>
+      </el-form-item>
+      <el-form-item label="分销商名称" prop="distributorName">
+        <el-input
+            v-model="formData.distributorName"
+            placeholder="自动填充名称"
+            readonly
+        />
       </el-form-item>
       <el-form-item label="余额" prop="balance">
         <el-input v-model="formData.balance" placeholder="请输入余额" />
       </el-form-item>
       <el-form-item label="账户编号" prop="accountId">
-        <el-input v-model="formData.accountId" placeholder="请输入账户编号" />
+        <el-input v-model="formData.accountId" placeholder="请输入账户编号" readonly />
       </el-form-item>
       <el-form-item label="暂扣金额" prop="detainAmount">
         <el-input v-model="formData.detainAmount" placeholder="请输入暂扣金额" />
@@ -125,6 +132,7 @@ const formData = ref({
   isRep: undefined,
   zkVAmount: undefined,
   name: undefined,
+  distributorName: undefined,
 })
 const formRules = reactive({
 })
@@ -236,6 +244,28 @@ onMounted(() => {
     }
   });
 })
+// 获取选中值时触发
+const handleChange = (selectedId) => {
+  // 通过ID查找分销商对象
+  const selectedDistributor = consigneeList.value.find(
+      item => item.distributorNum === selectedId
+  )
+
+  // 自动填充名称字段
+  if (selectedDistributor) {
+    formData.value.distributorName = selectedDistributor.distributorName
+    formData.value.accountId = generateUniqueNumber(selectedDistributor.distributorNum)
+  } else {
+    formData.value.distributorName = ''
+    formData.value.accountId = ''
+  }
+}
+function generateUniqueNumber(fixedPart) {
+  // 固定部分 + 时间戳 + 随机数
+  const timestamp = Date.now().toString().slice(-5); // 取时间戳后5位
+  const random = Math.floor(Math.random() * 10000).toString().padStart(3, '0'); // 3位随机数
+  return `${fixedPart}${timestamp}${random}`;
+}
 // const getDetail = async () => {
 //   console.log(query)
 //   if (queryId) {
