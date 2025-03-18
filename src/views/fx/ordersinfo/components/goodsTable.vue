@@ -178,7 +178,7 @@ const setCurrent = (row: CustomerInfoVO) => {
 defineExpose({handleOpen}) // 提供 open 方法，用于打开弹窗
 </script>
 
-<style>
+<style scoped>
 .goods .el-table__body tr:hover > td{
   background-color: #d9ecff !important;
 }

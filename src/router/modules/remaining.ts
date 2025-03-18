@@ -413,6 +413,16 @@ const remainingRouter: AppRouteRecordRaw[] = [
           activeMenu: '/fx/returnorder/detail'
         },
       },
+      {
+        path: '/fx/billapply/create',
+        component: () => import('@/views/fx/billapply/create.vue'),
+        name: 'BillApplyForm',
+        meta: {
+          hidden: true,
+          noCache: true,
+          title: '新建开票申请',
+        },
+      },
     ]
   },
 ]

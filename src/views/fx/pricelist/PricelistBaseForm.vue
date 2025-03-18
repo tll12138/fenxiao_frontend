@@ -7,28 +7,6 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="客户" prop="customer">
-        <el-select
-          v-model="formData.customer"
-          placeholder="请选择客户"
-          filterable
-          clearable
-          class="!w-240px"
-          popper-class="customer-select-popper"
-          @change="handleChange"
-          @visible-change="handleSelectVisible"
-        >
-          <el-option
-            v-for="dict in consigneeList"
-            :key="dict.id"
-            :label="dict.distributorName"
-            :value="dict.id"
-          />
-          <el-option v-if="loadingMore" key="loading" disabled>
-            <span class="text-gray-400">加载中...</span>
-          </el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="产品编码" prop="skuId">
         <el-input v-model="formData.skuId" placeholder="请输入产品编码" />
       </el-form-item>
@@ -70,14 +48,6 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="formData.createTime"
-          type="date"
-          value-format="x"
-          placeholder="选择创建时间"
-        />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -123,6 +93,22 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 
+/** 打开弹窗 */
+// const open = async (type: string, id?: number) => {
+//   dialogVisible.value = true
+//   dialogTitle.value = t('action.' + type)
+//   formType.value = type
+//   resetForm()
+//   // 修改时，设置数据
+//   if (id) {
+//     formLoading.value = true
+//     try {
+//       formData.value = await PricelistApi.getPricelist(id)
+//     } finally {
+//       formLoading.value = false
+//     }
+//   }
+// }
 /** 打开弹窗时预加载已选客户 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true

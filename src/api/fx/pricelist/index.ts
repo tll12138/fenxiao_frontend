@@ -7,7 +7,7 @@ export interface PricelistVO {
   skuId: string // 产品编码
   category: string // 规格
   saleprice: number // 销售最低价
-  cLevel: number // 客户等级
+  distributorLevel: number // 客户等级
   name: string // 产品名称
   isNormal: string // 是否基础类型
   brand: string // 品牌
@@ -45,4 +45,9 @@ export const PricelistApi = {
   exportPricelist: async (params) => {
     return await request.download({ url: `/fx/pricelist/export-excel`, params })
   },
-}
+
+  // 分销商层级调整后触发，将价格对照表同SKU直接按基础更新
+  processPriceUpdate: async (id: number) => {
+    return await request.get({ url: `/fx/pricelist/price-update?id=` + id })
+  },
+}

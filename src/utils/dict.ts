@@ -248,5 +248,9 @@ export enum DICT_TYPE {
   FX_BUSINESS_TYPE = 'fx_business_type',//FX 退货业务类型
   FX_WAREHOUSE_FEATURE = 'fx_warehouse_feature',//FX 仓库功能
   FX_BUSINESS_ENTITY = 'fx_business_entity',//FX 业务实体
-  FX_RESPOSITORY_CHANNEL = 'fx_respository_channel'//FX 发货仓库渠道
+  FX_RESPOSITORY_CHANNEL = 'fx_respository_channel',//FX 发货仓库渠道
+  FX_BILL_TYPE = 'fx_bill_type',//FX 发货仓库渠道
+  ACCOUNT_TYPE = 'account_type',//FX 账户类型
+  FX_FEE_TYPE = 'fx_fee_type',//FX 费用类型
+  FX_ACCOUNT_ADJUST_TYPE = 'fx_account_adjust_type'//FX 账户调整类型
 }

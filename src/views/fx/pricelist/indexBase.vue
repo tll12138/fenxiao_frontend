@@ -8,52 +8,10 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="客户" prop="customer">
-        <el-select
-          ref="selectRef"
-          class="!w-240px"
-          popper-class="customer-select-popper"
-          :suffix-icon="ConsigneeIcon as any"
-          v-model="queryParams.customer"
-          @visible-change="handleSelectVisible"
-          @change="handleChange"
-          placeholder="请选择客户"
-          filterable
-          clearable
-        >
-          <el-option
-            v-for="dict in consigneeList"
-            :key="dict.id"
-            :label="dict.distributorName"
-            :value="dict.id"
-          />
-          <el-option v-if="loadingMore" key="loading" disabled>
-            <span class="text-gray-400">加载中...</span>
-          </el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="产品编码" prop="skuId">
         <el-input
           v-model="queryParams.skuId"
           placeholder="请输入产品编码"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="规格" prop="category">
-        <el-input
-          v-model="queryParams.category"
-          placeholder="请输入规格"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="销售最低价" prop="saleprice">
-        <el-input
-          v-model="queryParams.saleprice"
-          placeholder="请输入销售最低价"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -83,21 +41,6 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="是否基础类型" prop="isNormal">
-        <el-select
-          v-model="queryParams.isNormal"
-          placeholder="请选择是否基础类型"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.YES_NO)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="品牌" prop="brand">
         <el-select
           v-model="queryParams.brand"
@@ -112,17 +55,6 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -151,8 +83,6 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
-      <el-table-column label="客户" align="center" prop="customer" />
       <el-table-column label="产品编码" align="center" prop="skuId" />
       <el-table-column label="规格" align="center" prop="category" />
       <el-table-column label="销售最低价" align="center" prop="saleprice" />
@@ -162,24 +92,12 @@
         </template>
       </el-table-column>
       <el-table-column label="产品名称" align="center" prop="name" />
-      <el-table-column label="是否基础类型" align="center" prop="isNormal">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isNormal" />
-        </template>
-      </el-table-column>
       <el-table-column label="品牌" align="center" prop="brand" >
         <template #default="scope">
           <dict-span-tag v-if="scope.row.brand" :type="DICT_TYPE.FX_BRAND" :value="scope.row.brand" />
           <span v-else>-</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
@@ -198,6 +116,14 @@
           >
             删除
           </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="handleUpdateAllCustomers(scope.row.id)"
+            v-hasPermi="['fx:pricelist:update']"
+          >
+            更新到所有客商
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -215,14 +141,11 @@
 </template>
 
 <script setup lang="ts">
-import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { PricelistApi, PricelistVO } from '@/api/fx/pricelist'
-import PricelistForm from './PricelistForm.vue'
+import PricelistForm from './PricelistBaseForm.vue'
 import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from "@/utils/dict";
-import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
 import {ref} from "vue";
-import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 分销价格对照 列表 */
 defineOptions({ name: 'Pricelist' })
@@ -230,13 +153,8 @@ defineOptions({ name: 'Pricelist' })
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
-const consigneeList = ref<CustomerInfoVO[]>([])
-const consigneeMap = ref<Record<number, CustomerInfoVO>>({})
 const currentPage = ref(1)
 const pageSize = ref(20)
-const loadingMore = ref(false)
-const hasMore = ref(true)
-const selectRef = ref()
 const loading = ref(true) // 列表的加载中
 const list = ref<PricelistVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
@@ -259,6 +177,7 @@ const exportLoading = ref(false) // 导出的加载中
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
+  queryParams.isNormal=1
   try {
     const data = await PricelistApi.getPricelistPage(queryParams)
     list.value = data.list
@@ -299,6 +218,17 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
+/** 更新到所有客商按钮操作 */
+const handleUpdateAllCustomers = async (id: number) => {
+  try {
+    // 开始更新
+    await PricelistApi.processPriceUpdate(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
 /** 导出按钮操作 */
 const handleExport = async () => {
   try {
@@ -314,100 +244,8 @@ const handleExport = async () => {
   }
 }
 
-const handleChange = (row) => {
-  queryParams.customer = row
-}
-
-/**
- * 获取客户列表
- */
-// const getConsigneeList = async () => {
-//   CustomerInfoApi.getCustomerInfoPage({pageNo: 1, pageSize: 100}).then((res) => {
-//     consigneeList.value = res.list
-//     consigneeMap.value = res.list.reduce((map, item) => {
-//       map[item.id] = item;
-//       return map;
-//     }, new Map());
-//     consigneeTotal.value = res.total
-//   })
-// }
-
-/** 处理下拉框显示/隐藏 */
-const handleSelectVisible = (visible: boolean) => {
-  if (visible) {
-    // 重置分页参数
-    currentPage.value = 1
-    hasMore.value = true
-    consigneeList.value = []
-    loadConsigneeList()
-
-    // 添加滚动监听
-    nextTick(() => {
-      const popper = document.querySelector('.customer-select-popper .el-select-dropdown__wrap')
-      if (popper) {
-        popper.addEventListener('scroll', handleScroll)
-      }
-    })
-  } else {
-    // 移除滚动监听
-    const popper = document.querySelector('.customer-select-popper .el-select-dropdown__wrap')
-    if (popper) {
-      popper.removeEventListener('scroll', handleScroll)
-    }
-  }
-}
-/** 处理滚动事件 */
-const handleScroll = (e: Event) => {
-  const target = e.target as HTMLElement
-  const { scrollTop, scrollHeight, clientHeight } = target
-  // 滚动到底部时加载更多（预留5px缓冲）
-  if (scrollHeight - scrollTop <= clientHeight + 5 && !loadingMore.value && hasMore.value) {
-    loadConsigneeList()
-  }
-}
-
-/** 加载客户列表 */
-const loadConsigneeList = async () => {
-  if (loadingMore.value || !hasMore.value) return
-  loadingMore.value = true
-
-  try {
-    const res = await CustomerInfoApi.getCustomerInfoPage({
-      pageNo: currentPage.value,
-      pageSize: pageSize.value
-    })
-
-    // 合并数据
-    consigneeList.value = [...consigneeList.value, ...res.list]
-    // 更新映射表
-    consigneeMap.value = consigneeList.value.reduce((map, item) => {
-      map[item.id] = item
-      return map
-    }, new Map());
-    // 判断是否还有更多
-    hasMore.value = res.list.length >= pageSize.value
-    currentPage.value++
-  } finally {
-    loadingMore.value = false
-  }
-}
-
 /** 初始化 **/
 onMounted(() => {
   getList()
-  // getConsigneeList()
-  if (queryParams.customer) {
-    CustomerInfoApi.getCustomerInfo(queryParams.customer).then(res => {
-      consigneeList.value = [res]
-      consigneeMap.value[res.id] = res
-    })
-  }
 })
 </script>
-<style>
-/* 添加下拉框滚动条样式 */
-.customer-select-popper .el-select-dropdown__wrap {
-  max-height: 400px;
-  overflow-y: auto;
-}
-</style>

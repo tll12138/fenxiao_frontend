@@ -65,6 +65,21 @@
             />
           </el-select>
       </el-form-item>
+      <el-form-item label="分销商等级" prop="distributorLevel">
+        <el-select
+            v-model="queryParams.distributorLevel"
+            placeholder="请选择分销商等级"
+            clearable
+            class="!w-240px"
+        >
+          <el-option
+              v-for="dict in getIntDictOptions(DICT_TYPE.FX_CUSTOMER_LEVEL)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="业务归属" prop="belongTo">
         <el-select
           v-model="queryParams.belongTo"
