@@ -49,13 +49,13 @@
            <el-col  :span="24" :sm="12" :md="12" :lg="8" class="col-style">
             <div class="my-4 info">
               <span class="label">销售商：</span>
-              <span class="item">{{ formData.supplierName }}</span>
+              <span class="item"> <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="formData.supplierId" /> </span>
             </div>
           </el-col>
            <el-col  :span="24" :sm="12" :md="12" :lg="8" class="col-style">
             <div class="my-4 info">
               <span class="label">收款商：</span>
-              <span class="item">{{ formData.receiveSupplierName }}</span>
+              <span class="item"> <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="formData.receiveSupplierId" /> </span>
             </div>
           </el-col>
            <el-col  :span="24" :sm="12" :md="12" :lg="8" class="col-style">
@@ -203,7 +203,6 @@
 <script setup lang="ts">
 import {DICT_TYPE} from '@/utils/dict'
 import {OrdersInfoApi} from "@/api/fx/ordersinfo";
-import {onMounted, ref} from "vue";
 import {propTypes} from "@/utils/propTypes";
 
 const { query } = useRoute() // 查询参数

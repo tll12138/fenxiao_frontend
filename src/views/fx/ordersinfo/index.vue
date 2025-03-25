@@ -322,16 +322,12 @@
 import {getIntDictOptions, DICT_TYPE} from '@/utils/dict'
 import download from '@/utils/download'
 import {OrdersInfoApi, OrdersInfoVO} from '@/api/fx/ordersinfo'
-import {ref} from 'vue';
 import {SubCompany} from "@/views/fx/customerinfo/data";
 import {SubCompanyInfoApi} from "@/api/fx/subcompanyinfo";
-import router from "@/router";
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
-import OrdersInfoForm from "@/views/fx/ordersinfo/create.vue";
 import { ElMessageBox } from 'element-plus'
-import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 
 /** 销售单 列表 */
 defineOptions({name: 'OrdersInfo'})

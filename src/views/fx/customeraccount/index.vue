@@ -9,13 +9,22 @@
       label-width="100px"
     >
       <el-form-item label="分销商编号" prop="distributorId">
-        <el-input
+        <el-select
+          ref="selectRef"
+          class="search-select select-form !w-240px"
+          :suffix-icon="ConsigneeIcon as any"
           v-model="queryParams.distributorId"
-          placeholder="请输入分销商编号"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
+          @change="handleChange"
+          placeholder="请选择分销商"
+          filterable
+          clearable>
+          <el-option
+            v-for="dict in consigneeList"
+            :key="dict.id"
+            :label="dict.distributorName"
+            :value="dict.id"
+          />
+        </el-select>
       </el-form-item>
 <!--      <el-form-item label="余额" prop="balance">-->
 <!--        <el-input-->
@@ -53,7 +62,7 @@
           class="!w-240px"
         >
         <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.YES_NO)"
+              v-for="dict in getIntDictOptions(DICT_TYPE.YES_NO)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -262,6 +271,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <CustomerAccountForm ref="formRef" @success="getList" />
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow"/>
 </template>
 
 <script setup lang="ts">
@@ -270,6 +280,9 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { CustomerAccountApi, CustomerAccountVO } from '@/api/fx/customeraccount'
 import CustomerAccountForm from './CustomerAccountForm.vue'
+import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
+import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 
 /** 分销商账号 列表 */
 defineOptions({ name: 'CustomerAccount' })
@@ -277,6 +290,16 @@ defineOptions({ name: 'CustomerAccount' })
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
+/**
+ * 收货方表格
+ */
+const consigneeRef = ref() //收货方表格引用
+const consigneeMap = ref<Map<number, CustomerInfoVO>>(new Map<number, CustomerInfoVO>())
+const consigneeTotal = ref<number>() //收货方数据
+const consigneeList = ref<CustomerInfoVO[]>([])
+const currentPage = ref(1)
+const pageSize = ref(20)
+const selectRef = ref()
 const loading = ref(true) // 列表的加载中
 const list = ref<CustomerAccountVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
@@ -360,8 +383,41 @@ const handleExport = async () => {
   }
 }
 
+const handleChange = (row) => {
+  queryParams.distributorId = row.id
+}
+
+/**
+ 选择收货方表格数据并回显到表单中
+ */
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  queryParams.distributorId = data.id
+}
+
+const getConsigneeList = async () => {
+  CustomerInfoApi.getCustomerInfoPage({pageNo: 1, pageSize: 100}).then((res) => {
+    consigneeList.value = res.list
+    consigneeMap.value = res.list.reduce((map, item) => {
+      map[item.id] = item;
+      return map;
+    }, new Map());
+    consigneeTotal.value = res.total
+  })
+}
+
 /** 初始化 **/
 onMounted(() => {
   getList()
+  getConsigneeList()
+  nextTick(() => {
+    if (selectRef.value) {
+      // 自定义点击事件逻辑
+      const select = selectRef.value?.suffixRef;
+      select.onclick = (event: Event) => {
+        event.stopPropagation();
+        consigneeRef.value.open()
+      }
+    }
+  });
 })
 </script>

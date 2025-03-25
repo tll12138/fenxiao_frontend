@@ -5,7 +5,11 @@ export function createListenerObject(options, isTask, prefix) {
   debugger
   const listenerObj = Object.create(null)
   listenerObj.event = options.event
-  isTask && (listenerObj.id = options.id) // 任务监听器特有的 id 字段
+  console.log("options.id:"+options.id);
+  if (isTask) {
+    // 使用现有ID或生成带前缀的UUID
+    listenerObj.id = options.id || `TaskListener_${uuid(8)}`
+  } // 任务监听器特有的 id 字段
   switch (options.listenerType) {
     case 'scriptListener':
       listenerObj.script = createScriptObject(options, prefix)

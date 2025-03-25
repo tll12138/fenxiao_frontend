@@ -84,6 +84,7 @@
             placeholder="结算价"
             :min="row.saleType === 1  ? 0 : row.price"
             :controls="false"
+            @change="() => updatePriceAmount($index)"
           />
         </el-form-item>
       </template>
@@ -92,16 +93,16 @@
     <el-table-column label="数量" width="80" prop="count">
       <template #default="{ row, $index }">
         <el-form-item v-if="row.skuId" :prop="`${$index}.count`" :rules="formRules.count" class="mb-0px!">
-          <el-input-number v-model="row.count" placeholder="数量" :controls="false" size="small"/>
+          <el-input-number v-model="row.count" placeholder="数量" :controls="false" size="small" @change="() => updatePriceAmount($index)"/>
         </el-form-item>
       </template>
     </el-table-column>
-    <el-table-column label="销售金额" width="90">
+    <el-table-column label="销售金额" width="90" prop="priceAmount">
       <template #default="scope">
         {{ ((scope.row.count || 0) * (scope.row.salePrice || 0))?.toFixed(2) || 0 }}
       </template>
     </el-table-column>
-    <el-table-column label="净重(kg)" >
+    <el-table-column label="净重(kg)" prop="weight">
       <template #default="scope">
         {{ ((scope.row.count || 0) * (scope.row.weight || 0))?.toFixed(2) || 0 }}
       </template>
@@ -327,8 +328,8 @@ const handleSkuIdChange = (id, index) => {
  * @param index
  */
 const handleClickGoodsRow = (row ,index) => {
-  console.log("行数：，",index)
-  formData.value[index] = {...row} as Goods
+  formData.value[index] = { ...row } as Goods
+  updatePriceAmount(index)  // 选择商品时触发计算
 }
 
 /**
@@ -382,11 +383,20 @@ const handleSaleTypeChange = (e,$index) => {
   if (e == 1){
     formData.value[$index].salePrice = 0
   }
+  updatePriceAmount($index)  // 类型变化时触发计算
 }
 
 const setData = (data) => {
   console.log(data)
   formData.value = data
+}
+
+// 新增价格计算方法
+const updatePriceAmount = (index: number) => {
+  const row = formData.value[index]
+  if (row.count !== undefined && row.salePrice !== undefined) {
+    row.priceAmount = Number((row.count * row.salePrice).toFixed(2))
+  }
 }
 
 

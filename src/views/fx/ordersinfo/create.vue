@@ -50,17 +50,17 @@
 
             <ElCol :span="7">
               <el-form-item label="销售经销商" prop="supplierId">
-                <el-select v-model="formData.supplierId" placeholder="请选择销售经销商" clearable filterable
-                  style="width: 100%">
-                  <el-option v-for="item in subCompanyList" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="formData.supplierId" placeholder="请选择销售经销商" filterable>
+                  <el-option v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)" :key="dict.value"
+                             :label="dict.label" :value="dict.value" />
                 </el-select>
               </el-form-item>
             </ElCol>
             <ElCol :offset="1" :span="7">
               <el-form-item label="收款经销商" prop="receiveSupplierId">
-                <el-select v-model="formData.receiveSupplierId" placeholder="请选择收款经销商" clearable filterable
-                  style="width: 100%">
-                  <el-option v-for="item in subCompanyList" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="formData.receiveSupplierId" placeholder="请选择收款经销商" filterable>
+                  <el-option v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)" :key="dict.value"
+                             :label="dict.label" :value="dict.value" />
                 </el-select>
               </el-form-item>
             </ElCol>
@@ -111,10 +111,17 @@
               </el-form-item>
             </ElCol>
 
-
-            <ElCol v-if="formData.customerLevel == 2" :offset="1" :span="15">
+            <ElCol v-if="[2,3].includes(formData.customerLevel)" :offset="1" :span="15">
               <el-form-item label="大客户地址" prop="bigCustomerAddress">
-                <el-input v-model="formData.bigCustomerAddress" placeholder="请输入大客户地址" />
+                <el-input v-model="formData.bigCustomerAddress" placeholder="请选择大客户地址" readonly>
+                  <template #append>
+                    <el-button
+                      style="display: flex; align-items: center; background-color: #1e83e9; color: white; border-radius: 0"
+                      @click="openForm('bigCustomerAddress')">
+                      选择地址
+                    </el-button>
+                  </template>
+                </el-input>
               </el-form-item>
             </ElCol>
 
@@ -290,6 +297,7 @@
     </div>
     <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
     <CustomerAddressTable ref="addressRef" :id="formData.distributorId" @click-row="handleClickAddressRow" />
+    <BigAddressTable ref="bigAddressRef" :id="formData.distributorId" @click-row="handleClickBigCustomerAddressRow" />
   </div>
 
 </template>
@@ -301,6 +309,7 @@ import { pcaTextArr } from "element-china-area-data";
 import { Search } from "@element-plus/icons-vue";
 import ConsigneeTable from "./components/consigneeTable.vue"
 import CustomerAddressTable from "./components/CustomerAddressTable.vue"
+import BigAddressTable from "./components/BigAddressTable.vue";
 import { CustomerInfoApi, CustomerInfoVO } from "@/api/fx/customerinfo";
 import { CustomerAddressVO } from "@/api/fx/customeraddress";
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
@@ -308,7 +317,6 @@ import { UtilsApi } from "@/api/fx/utils";
 import { SendRepositoryApi } from "@/api/fx/sendrepository";
 import { SubCompanyInfoApi } from "@/api/fx/subcompanyinfo";
 import { useTagsViewStore } from "@/store/modules/tagsView";
-import { onMounted, ref } from "vue";
 import {
   Goods,
   Sell,
@@ -321,7 +329,7 @@ import {
   Paperclip,
   MapLocation
 } from '@element-plus/icons-vue'
-import GoodsTable from "@/views/fx/ordersinfo/components/goodsTable.vue";
+
 /** 销售单 表单 */
 defineOptions({ name: 'OrdersInfoForm' })
 
@@ -415,6 +423,7 @@ const needHandleAddress = ref<string>('')
  * 子表的表单
  */
 const ordersDetailFormRef = ref()
+const bigAddressRef = ref()
 const distributorName = ref('')
 
 /**
@@ -427,7 +436,22 @@ const openForm = (str: string) => {
     addressRef.value.open()
   } else if (str === 'consignee') {
     consigneeRef.value.open()
+  } else if (str === 'bigCustomerAddress') {  // 新增条件分支
+    // 这里需要调用大客户地址选择组件，假设组件名为 BigCustomerAddressTable
+    bigAddressRef.value.open()
   }
+}
+
+const handleClickBigCustomerAddressRow = (data: any) => {
+  formData.value.bigCustomerAddress = data.address;
+  formData.value.province = data.province;
+  formData.value.city = data.city;
+  formData.value.district = data.district;
+  pcd.value = [data.province, data.city, data.district];
+  formData.value.manager = data.person;
+  formData.value.phone = data.contact;
+  formData.value.address = data.address;
+  bigAddressRef.value.close()
 }
 
 /**
@@ -511,6 +535,7 @@ const submitForm = async (type: string) => {
     receiveSupplierId: formData.value.receiveSupplierId, // 收货经销商
     channel: formData.value.channel, // 渠道
     distributorId: formData.value.distributorId, // 收货方
+    distributorName: distributorName, // 收货方
     businessBelong: formData.value.businessBelong, // 业务归属
     customerLevel: formData.value.customerLevel, // 客户等级
     requirement: formData.value.requirement, // 发货要求
@@ -690,7 +715,7 @@ const resetAddressFiled = () => {
  * 获取收货方列表
  */
 const getConsigneeList = async () => {
-  CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 }).then((res) => {
+  CustomerInfoApi.getAllCustomerInfo({ pageNo: 1, pageSize: 100 }).then((res) => {
     consigneeList.value = res.list
     consigneeMap.value = res.list.reduce((map, item) => {
       map[item.id] = item;
