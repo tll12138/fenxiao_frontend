@@ -145,9 +145,9 @@
           >
             取消
           </el-button>
-          <el-button link type="primary" v-else @click="handleCreate(scope.row.id)">
-            重新发起
-          </el-button>
+<!--          <el-button link type="primary" v-else @click="handleCreate(scope.row.id)">-->
+<!--            重新发起-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>

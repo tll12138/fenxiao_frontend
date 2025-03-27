@@ -42,7 +42,8 @@
           @change="handleChange"
           placeholder="请选择收货方"
           filterable
-          clearable>
+          clearable
+        >
           <el-option
             v-for="dict in consigneeList"
             :key="dict.id"
@@ -82,15 +83,15 @@
 
       <!-- 物流单号-->
 
-<!--      <el-form-item label="备注" prop="remark">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.remark"-->
-<!--          placeholder="请输入备注"-->
-<!--          clearable-->
-<!--          @keyup.enter="handleQuery"-->
-<!--          class="select-form"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="备注" prop="remark">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.remark"-->
+      <!--          placeholder="请输入备注"-->
+      <!--          clearable-->
+      <!--          @keyup.enter="handleQuery"-->
+      <!--          class="select-form"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <!-- 备注-->
 
       <el-form-item label="erp单号" prop="erpOrderNumber">
@@ -143,30 +144,25 @@
       </el-form-item>
       <!-- 业务归属-->
 
-
       <span style="width: 100%" class="text-right">
         <el-form-item>
           <el-button @click="handleQuery">
-            <Icon icon="ep:search" class="mr-5px"/>
+            <Icon icon="ep:search" class="mr-5px" />
             搜索
           </el-button>
           <el-button @click="resetQuery">
-            <Icon icon="ep:refresh" class="mr-5px"/>
+            <Icon icon="ep:refresh" class="mr-5px" />
             重置
           </el-button>
-        <router-link to="/fx/ordersinfo/create">
-          <el-button
-            class="ml-3"
-            type="primary"
-            plain
-          >
-            <Icon icon="ep:plus" class="mr-5px"/>
-            新增审批
-          </el-button>
-        </router-link>
+          <router-link to="/fx/ordersinfo/create">
+            <el-button class="ml-3" type="primary" plain>
+              <Icon icon="ep:plus" class="mr-5px" />
+              新增审批
+            </el-button>
+          </router-link>
         </el-form-item>
       </span>
-        <!--            <el-button
+      <!--            <el-button
               class="ml-3"
               type="success"
               plain
@@ -184,53 +180,56 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table ref="tableRef" @row-click="ClickAndExpandRow" v-loading="loading" :data="list"
-              :stripe="true" :header-row-style="{fontSize: '12px'}" style="font-size: 12px">
+    <el-table
+      ref="tableRef"
+      @row-click="ClickAndExpandRow"
+      v-loading="loading"
+      :data="list"
+      :stripe="true"
+      :header-row-style="{ fontSize: '12px' }"
+      style="font-size: 12px"
+    >
       <el-table-column type="expand">
         <template #default="props">
           <div class="px-5 ml-10">
             <el-descriptions bordered :column="4">
-              <el-descriptions-item label="销售方">{{
-                  props.row.supplierName
-                }}
+              <el-descriptions-item label="销售方"
+                >{{ props.row.supplierName }}
               </el-descriptions-item>
-              <el-descriptions-item label="收货经销商">{{
-                  props.row.receiveSupplierName
-                }}
+              <el-descriptions-item label="收货经销商"
+                >{{ props.row.receiveSupplierName }}
               </el-descriptions-item>
               <el-descriptions-item label="渠道">
-                <dict-span-tag :type="DICT_TYPE.FX_CHANNEL" :value="props.row.channel"/>
+                <dict-span-tag :type="DICT_TYPE.FX_CHANNEL" :value="props.row.channel" />
               </el-descriptions-item>
               <el-descriptions-item label="客户等级">
-                <dict-span-tag :type="DICT_TYPE.FX_CUSTOMER_LEVEL"
-                               :value="props.row.customerLevel"/>
+                <dict-span-tag
+                  :type="DICT_TYPE.FX_CUSTOMER_LEVEL"
+                  :value="props.row.customerLevel"
+                />
               </el-descriptions-item>
 
               <el-descriptions-item label="收货人">{{ props.row.manager }}</el-descriptions-item>
               <el-descriptions-item label="联系电话">{{ props.row.phone }}</el-descriptions-item>
               <el-descriptions-item label="物流公司">
-                <dict-tag :type="DICT_TYPE.FX_WL" :value="props.row.logisticsCompany"/>
+                <dict-tag :type="DICT_TYPE.FX_WL" :value="props.row.logisticsCompany" />
               </el-descriptions-item>
-              <el-descriptions-item :span="2" label="备注内容">{{
-                  props.row.remark
-                }}
+              <el-descriptions-item :span="2" label="备注内容"
+                >{{ props.row.remark }}
               </el-descriptions-item>
               <el-descriptions-item label="省市区">
                 {{ props.row.province }}/{{ props.row.city }}/{{ props.row.district }}
               </el-descriptions-item>
-              <el-descriptions-item :span="3" label="收货地址">{{
-                  props.row.address
-                }}
+              <el-descriptions-item :span="3" label="收货地址"
+                >{{ props.row.address }}
               </el-descriptions-item>
-
             </el-descriptions>
           </div>
-
         </template>
       </el-table-column>
       <el-table-column label="单据编号" align="center" prop="orderId" width="150">
         <template #default="scope">
-          <router-link :to="'/fx/orders/detail?id='+scope.row.id" @click.stop>
+          <router-link :to="'/fx/orders/detail?id=' + scope.row.id" @click.stop>
             <el-link type="primary" style="font-size: 13px">
               {{ scope.row.orderId }}
             </el-link>
@@ -242,37 +241,41 @@
           {{ scope.row.orderDate.join('-') }}
         </template>
       </el-table-column>
-      <el-table-column label="收货方" align="center" prop="distributorName" width="120"/>
+      <el-table-column label="收货方" align="center" prop="distributorName" width="120" />
       <el-table-column label="物流公司" align="center" prop="logisticsCompany" width="100">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.FX_WL" :value="scope.row.logisticsCompany"/>
+          <dict-tag :type="DICT_TYPE.FX_WL" :value="scope.row.logisticsCompany" />
         </template>
       </el-table-column>
-      <el-table-column label="物流单号" align="center" prop="logisticsNumber"/>
+      <el-table-column label="物流单号" align="center" prop="logisticsNumber" />
       <el-table-column label="订单状态" align="center" prop="orderStatus">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.FX_ORDER_STATUS" :value="scope.row.orderStatus"/>
+          <dict-tag :type="DICT_TYPE.FX_ORDER_STATUS" :value="scope.row.orderStatus" />
         </template>
       </el-table-column>
-      <el-table-column label="业务归属" align="center" prop="businessBelong"
-                       :show-overflow-tooltip="true">
+      <el-table-column
+        label="业务归属"
+        align="center"
+        prop="businessBelong"
+        :show-overflow-tooltip="true"
+      >
         <template #default="scope">
-          <dict-span-tag :type="DICT_TYPE.FX_BELONG" :value="scope.row.businessBelong"/>
+          <dict-span-tag :type="DICT_TYPE.FX_BELONG" :value="scope.row.businessBelong" />
         </template>
       </el-table-column>
-      <el-table-column label="发货仓库" align="center" prop="warehouse"/>
-      <el-table-column label="商品合计" align="center" prop="totalGoods"/>
-      <el-table-column label="ERP单号" align="center" prop="erpOrderNumber"/>
-      <el-table-column label="外部单号" align="center" prop="externalOrderNumber"/>
-      <el-table-column label="销售金额" align="center" prop="salesAmount"/>
-      <el-table-column label="发货数量" align="center" prop="sendQuantity"/>
-      <el-table-column label="创建者" align="center" prop="creator"/>
-      <el-table-column label="备注" align="center" prop="remark"/>
+      <el-table-column label="发货仓库" align="center" prop="warehouse" />
+      <el-table-column label="商品合计" align="center" prop="totalGoods" />
+      <el-table-column label="ERP单号" align="center" prop="erpOrderNumber" />
+      <el-table-column label="外部单号" align="center" prop="externalOrderNumber" />
+      <el-table-column label="销售金额" align="center" prop="salesAmount" />
+      <el-table-column label="发货数量" align="center" prop="sendQuantity" />
+      <el-table-column label="创建者" align="center" prop="creator" />
+      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <div class="flex flex-col justify-center items-center">
             <div>
-              <router-link :to="'/fx/ordersinfo/create?id='+ scope.row.id">
+              <router-link :to="'/fx/ordersinfo/create?id=' + scope.row.id">
                 <el-button
                   @click.stop
                   v-if="scope.row.orderStatus === 0"
@@ -293,16 +296,17 @@
                 取消审核
               </el-button>
             </div>
-            <!--            <div>-->
-            <!--              <el-button-->
-            <!--                link-->
-            <!--                type="danger"-->
-            <!--                @click="handleDelete(scope.row.id)"-->
-            <!--                v-hasPermi="['fx:orders-info:delete']"-->
-            <!--              >-->
-            <!--                删除-->
-            <!--              </el-button>-->
-            <!--            </div>-->
+            <div>
+              <el-button
+                v-if="scope.row.orderStatus === 0"
+                link
+                type="danger"
+                @click="handleDelete(scope.row.id)"
+                v-hasPermi="['fx:orders-info:delete']"
+              >
+                删除
+              </el-button>
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -315,27 +319,27 @@
       @pagination="getList"
     />
   </ContentWrap>
-  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow"/>
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
 </template>
 
 <script setup lang="ts">
-import {getIntDictOptions, DICT_TYPE} from '@/utils/dict'
+import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import download from '@/utils/download'
-import {OrdersInfoApi, OrdersInfoVO} from '@/api/fx/ordersinfo'
-import {SubCompany} from "@/views/fx/customerinfo/data";
-import {SubCompanyInfoApi} from "@/api/fx/subcompanyinfo";
-import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
-import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
-import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import { OrdersInfoApi, OrdersInfoVO } from '@/api/fx/ordersinfo'
+import { SubCompany } from '@/views/fx/customerinfo/data'
+import { SubCompanyInfoApi } from '@/api/fx/subcompanyinfo'
+import ConsigneeIcon from '@/views/fx/ordersinfo/components/ConsigneeIcon.vue'
+import { CustomerInfoApi, CustomerInfoVO } from '@/api/fx/customerinfo'
+import ConsigneeTable from '@/views/fx/ordersinfo/components/consigneeTable.vue'
 import { ElMessageBox } from 'element-plus'
 
 /** 销售单 列表 */
-defineOptions({name: 'OrdersInfo'})
+defineOptions({ name: 'OrdersInfo' })
 
 const shortcuts = ref([
   {
     text: '今天',
-    value: [new Date(), new Date()],
+    value: [new Date(), new Date()]
   },
   {
     text: '昨天',
@@ -343,114 +347,114 @@ const shortcuts = ref([
       const end = new Date()
       end.setTime(end.getTime() - 3600 * 1000 * 24)
       return [end, end]
-    },
+    }
   },
   {
     text: '近7天',
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
       return [start, end]
-    },
+    }
   },
   {
     text: '近30天',
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
       return [start, end]
-    },
+    }
   },
   {
     text: '近90天',
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
       return [start, end]
-    },
+    }
   },
   {
     text: '近180天',
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
       return [start, end]
-    },
+    }
   },
   {
     text: '本周',
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
       //现在星期几；0代表星期天，6代表星期六
-      const thisDay = start.getDay();
+      const thisDay = start.getDay()
       //现在是一个月的第几天
-      const thisDate = start.getDate();
+      const thisDate = start.getDate()
       console.log(thisDay)
       console.log(thisDate)
       if (thisDay != 0) {
-        start.setDate(thisDate - thisDay + 1);
+        start.setDate(thisDate - thisDay + 1)
       }
       if (start > end) {
         end.setTime(start.getTime())
       }
       return [start, end]
-    },
+    }
   },
   {
     text: '本月',
     onClick(picker) {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setDate(1);
-      picker.$emit('orderDate', [start, end]);
+      start.setDate(1)
+      picker.$emit('orderDate', [start, end])
     },
     value: () => {
-      const end = new Date();
-      const start = new Date();
+      const end = new Date()
+      const start = new Date()
       end.setTime(start.getTime() - 3600 * 1000 * 24)
-      start.setDate(1);
+      start.setDate(1)
       return [start, end]
-    },
+    }
   },
   {
     text: '本季度',
     value: () => {
-      const oDate = new Date();
-      const thisYear = oDate.getFullYear();
-      const thisMonth = oDate.getMonth() + 1;
-      const n = Math.ceil(thisMonth / 3); // 季度
-      const Month = n * 3 - 1;
-      const start = new Date(thisYear, Month - 2, 1);
-      const end = new Date();
+      const oDate = new Date()
+      const thisYear = oDate.getFullYear()
+      const thisMonth = oDate.getMonth() + 1
+      const n = Math.ceil(thisMonth / 3) // 季度
+      const Month = n * 3 - 1
+      const start = new Date(thisYear, Month - 2, 1)
+      const end = new Date()
       end.setTime(end.getTime() - 3600 * 1000 * 24)
       return [start, end]
-    },
+    }
   },
   {
     text: '本年',
     value: () => {
-      const end = new Date();
-      const start = new Date();
-      start.setMonth(0);
-      start.setDate(1);
+      const end = new Date()
+      const start = new Date()
+      start.setMonth(0)
+      start.setDate(1)
       end.setTime(end.getTime() - 3600 * 1000 * 24)
       return [start, end]
-    },
-  },
+    }
+  }
 ])
 const message = useMessage() // 消息弹窗
-const {t} = useI18n() // 国际化
+const { t } = useI18n() // 国际化
 
 const loading = ref(true) // 列表的加载中
 const list = ref<OrdersInfoVO[]>([]) // 列表的数据
@@ -467,7 +471,7 @@ const queryParams = reactive({
   externalOrderNumber: undefined,
   orderType: undefined,
   distributorId: undefined,
-  businessBelong: undefined,
+  businessBelong: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -531,8 +535,7 @@ const handleDelete = async (id: number) => {
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
-  } catch {
-  }
+  } catch {}
 }
 
 /** 导出按钮操作 */
@@ -558,12 +561,12 @@ const ClickAndExpandRow = (row) => {
  * 获取收货方列表
  */
 const getConsigneeList = async () => {
-  CustomerInfoApi.getCustomerInfoPage({pageNo: 1, pageSize: 100}).then((res) => {
+  CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 }).then((res) => {
     consigneeList.value = res.list
     consigneeMap.value = res.list.reduce((map, item) => {
-      map[item.id] = item;
-      return map;
-    }, new Map());
+      map[item.id] = item
+      return map
+    }, new Map())
     consigneeTotal.value = res.total
   })
 }
@@ -598,7 +601,6 @@ const handleCancel = async (row) => {
   message.success('取消成功')
   // 刷新列表
   await getList()
-
 }
 
 /**
@@ -616,13 +618,13 @@ onMounted(() => {
   nextTick(() => {
     if (selectRef.value) {
       // 自定义点击事件逻辑
-      const select = selectRef.value?.suffixRef;
+      const select = selectRef.value?.suffixRef
       select.onclick = (event: Event) => {
-        event.stopPropagation();
+        event.stopPropagation()
         consigneeRef.value.open()
       }
     }
-  });
+  })
 })
 </script>
 <style scoped>

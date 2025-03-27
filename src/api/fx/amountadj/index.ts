@@ -10,6 +10,7 @@ export interface AmountAdjVO {
   remark: string // 调整说明
   type: number // 调整类型
   adjustBalance: number // 调整后余额
+  adjustWithholdBalance: number // 调整后暂扣金额
 }
 
 // 分销账户资金调整记录 API
@@ -43,4 +44,4 @@ export const AmountAdjApi = {
   exportAmountAdj: async (params) => {
     return await request.download({ url: `/fx/amount-adj/export-excel`, params })
   },
-}
+}
