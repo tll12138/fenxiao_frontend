@@ -125,13 +125,19 @@
 <!--        />-->
 <!--      </el-form-item>-->
       <el-form-item label="品牌" prop="brand">
-        <el-input
+        <el-select
           v-model="queryParams.brand"
-          placeholder="请输入品牌"
+          placeholder="请选择关联品牌"
           clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BRAND)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
 <!--      <el-form-item label="商品图片" prop="picBig">-->
 <!--        <el-input-->
@@ -356,7 +362,11 @@
 <!--        width="180px"-->
 <!--      />-->
 <!--      <el-table-column label="开票名称" align="center" prop="billingName" />-->
-      <el-table-column label="品牌" align="center" prop="brand" width="150"/>
+      <el-table-column label="品牌" align="center" prop="brand" width="150" >
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.FX_BRAND" :value="scope.row.brand" />
+        </template>
+      </el-table-column>
 <!--      <el-table-column label="商品图片" align="center" prop="picBig" />-->
 <!--      <el-table-column label="款式编码" align="center" prop="iId" />-->
 <!--      <el-table-column label="市场价" align="center" prop="marketPrice" />-->

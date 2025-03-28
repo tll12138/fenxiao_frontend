@@ -14,4 +14,5 @@ export  interface Goods {
   returnCount?: number,
   returnPrice?: number,
   returnAmount?: number,
+  brand?: string,
 }

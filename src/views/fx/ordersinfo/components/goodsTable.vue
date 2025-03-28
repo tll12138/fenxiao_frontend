@@ -129,7 +129,7 @@ const getList = async () => {
       enabled: 1,
       skuId: queryParams.skuId,
       skuName: queryParams.skuName,
-      warehouseCode: props.repositoryCode
+      warehouseCode: props.repositoryCode,
     });
 
     // 调试输出：检查 API 返回数据结构
@@ -144,6 +144,7 @@ const getList = async () => {
       category: item.category,
       price: item.salePrice,
       inventory: item.inventory,
+      brand: item.brand,
     }));
 
     total.value = response.total;
