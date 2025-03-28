@@ -33,13 +33,13 @@ export const SentMessageApi = {
     return await request.put({ url: `/fx/sent-message/update`, data })
   },
 
-  // 删除分销发货要求消息
-  deleteSentMessage: async (id: number) => {
-    return await request.delete({ url: `/fx/sent-message/delete?id=` + id })
+  // 发送消息提醒
+  pushSentMessage: async (id: number) => {
+    return await request.get({ url: `/fx/sent-message/push?id=` + id })
   },
 
   // 导出分销发货要求消息 Excel
   exportSentMessage: async (params) => {
     return await request.download({ url: `/fx/sent-message/export-excel`, params })
   },
-}
+}

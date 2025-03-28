@@ -8,21 +8,6 @@
       :inline="true"
       label-width="68px"
     >
-<!--      <el-form-item label="类型" prop="type">-->
-<!--        <el-select-->
-<!--          v-model="queryParams.type"-->
-<!--          placeholder="请选择类型"-->
-<!--          clearable-->
-<!--          class="!w-240px"-->
-<!--        >-->
-<!--          <el-option-->
-<!--            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
-<!--            :key="dict.value"-->
-<!--            :label="dict.label"-->
-<!--            :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
       <el-form-item label="单据编号" prop="soId">
         <el-input
           v-model="queryParams.soId"
@@ -32,16 +17,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="消息内容" prop="msg">
-        <el-input
-          v-model="queryParams.msg"
-          placeholder="请输入消息内容"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="计划发送时间" prop="sendTime">
+      <el-form-item label="计划发送时间" prop="sendTime" label-width="100">
         <el-date-picker
           v-model="queryParams.sendTime"
           value-format="YYYY-MM-DD HH:mm:ss"
@@ -49,15 +25,6 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="仓库" prop="warehouseId">
-        <el-input
-          v-model="queryParams.warehouseId"
-          placeholder="请输入仓库"
-          clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
@@ -90,14 +57,6 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          @click="openForm('create')"-->
-<!--          v-hasPermi="['fx:sent-message:create']"-->
-<!--        >-->
-<!--          <Icon icon="ep:plus" class="mr-5px" /> 新增-->
-<!--        </el-button>-->
         <el-button
           type="success"
           plain
@@ -114,10 +73,14 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
       <el-table-column label="类型" align="center" prop="type" />
       <el-table-column label="单据编号" align="center" prop="soId" />
-      <el-table-column label="消息内容" align="center" prop="msg" />
+      <el-table-column
+        label="消息内容"
+        align="center"
+        prop="msg"
+        class-name="wrap-text"
+      />
       <el-table-column
         label="计划发送时间"
         align="center"
@@ -125,38 +88,22 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="仓库" align="center" prop="warehouseId" />
       <el-table-column label="是否发送" align="center" prop="isSend">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isSend" />
         </template>
       </el-table-column>
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
       <el-table-column label="操作" align="center">
-<!--        <template #default="scope">-->
-<!--          <el-button-->
-<!--            link-->
-<!--            type="primary"-->
-<!--            @click="openForm('update', scope.row.id)"-->
-<!--            v-hasPermi="['fx:sent-message:update']"-->
-<!--          >-->
-<!--            编辑-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            link-->
-<!--            type="danger"-->
-<!--            @click="handleDelete(scope.row.id)"-->
-<!--            v-hasPermi="['fx:sent-message:delete']"-->
-<!--          >-->
-<!--            删除-->
-<!--          </el-button>-->
-<!--        </template>-->
+        <template #default="scope">
+          <el-button
+            link
+            type="primary"
+            @click="handlePushSentMessage(scope.row.id)"
+            v-hasPermi="['fx:sent-message:delete']"
+          >
+            发送提醒到钉钉
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -232,14 +179,14 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 删除按钮操作 */
-const handleDelete = async (id: number) => {
+/** 发送消息提醒按钮操作 */
+const handlePushSentMessage = async (id: number) => {
   try {
-    // 删除的二次确认
-    await message.delConfirm()
-    // 发起删除
-    await SentMessageApi.deleteSentMessage(id)
-    message.success(t('common.delSuccess'))
+    // 发送消息提醒的二次确认
+    await message.confirm("确认发送消息提醒吗？")
+    // 发起发送消息提醒
+    await SentMessageApi.pushSentMessage(id)
+    message.success(t('common.success'))
     // 刷新列表
     await getList()
   } catch {}
@@ -265,3 +212,11 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style scoped>
+/* 新增换行样式 */
+:deep(.wrap-text) .cell {
+  white-space: pre-line;  /* 保留换行符并自动换行 */
+  word-break: break-word; /* 长单词或URL强制换行 */
+}
+</style>
