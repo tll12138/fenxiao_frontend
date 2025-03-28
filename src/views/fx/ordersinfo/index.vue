@@ -238,7 +238,7 @@
       </el-table-column>
       <el-table-column label="单据日期" align="center" prop="orderDate">
         <template #default="scope">
-          {{ scope.row.orderDate.join('-') }}
+          {{ scope.row.orderDate && scope.row.orderDate.length > 0 ? scope.row.orderDate.join('-') : '' }}
         </template>
       </el-table-column>
       <el-table-column label="收货方" align="center" prop="distributorName" width="120" />
