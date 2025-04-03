@@ -31,29 +31,29 @@
       <el-form-item label="虚拟分类" prop="vcName">
         <el-input v-model="formData.vcName" placeholder="请输入虚拟分类" />
       </el-form-item>
-      <el-form-item label="商品属性" prop="itemType">
-        <el-select v-model="formData.itemType" placeholder="请选择商品属性">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="商品属性" prop="itemType">-->
+<!--        <el-select v-model="formData.itemType" placeholder="请选择商品属性">-->
+<!--          <el-option-->
+<!--            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item label="单位" prop="unit">
         <el-input v-model="formData.unit" placeholder="请输入单位" />
       </el-form-item>
-      <el-form-item label="商品类型" prop="skuType">
-        <el-select v-model="formData.skuType" placeholder="请选择商品类型">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="商品类型" prop="skuType">-->
+<!--        <el-select v-model="formData.skuType" placeholder="请选择商品类型">-->
+<!--          <el-option-->
+<!--            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item label="修改时间" prop="modified">
         <el-date-picker
           v-model="formData.modified"

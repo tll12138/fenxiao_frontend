@@ -40,16 +40,16 @@
       <el-form-item label="调整后暂扣账户金额" prop="afterTempAmount">
         <el-input v-model="formData.afterTempAmount" placeholder="请输入调整后暂扣账户金额" />
       </el-form-item>
-      <el-form-item label="调整类型" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择调整类型">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="调整类型" prop="type">-->
+<!--        <el-select v-model="formData.type" placeholder="请选择调整类型">-->
+<!--          <el-option-->
+<!--            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>

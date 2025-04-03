@@ -13,16 +13,16 @@
       <el-form-item label="费用类型" prop="reason">
         <el-input v-model="formData.reason" placeholder="请输入费用类型" />
       </el-form-item>
-      <el-form-item label="支付方式" prop="payType">
-        <el-select v-model="formData.payType" placeholder="请选择支付方式">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="支付方式" prop="payType">-->
+<!--        <el-select v-model="formData.payType" placeholder="请选择支付方式">-->
+<!--          <el-option-->
+<!--            v-for="dict in getStrDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item label="支付证明" prop="payProof">
         <el-input v-model="formData.payProof" placeholder="请输入支付证明" />
       </el-form-item>
