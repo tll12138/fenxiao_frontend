@@ -53,7 +53,7 @@
                   :suffix-icon="ConsigneeIcon as any"
                   v-model="formData.originOrder"
                   @change="handleChangeOrder"
-                  placeholder="请选择收货方"
+                  placeholder="请选择销售单"
                   filterable
                   clearable
                 />
@@ -84,7 +84,7 @@
               <el-form-item label="退货经销商" prop="returnDealer">
                 <el-select
                   v-model="formData.returnDealer"
-                  placeholder="请选择收款经销商"
+                  placeholder="请选择退货经销商"
                   clearable
                   filterable
                   style="width: 100%"
@@ -102,7 +102,7 @@
               <el-form-item label="收货仓库" prop="warehouseCode">
                 <el-select
                   v-model="formData.warehouseCode"
-                  placeholder="请选择发货仓库"
+                  placeholder="请选择收货仓库"
                   filterable
                   @change="handleWarehouseChange"
                 >
@@ -117,7 +117,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="仓库功能" prop="warehouseFeature">
-                <el-select v-model="formData.warehouseFeature" placeholder="请选择仓库功能">
+                <el-select v-model="formData.warehouseFeature" placeholder="请选择仓库功能" class="w-full">
                   <el-option
                     v-for="dict in getStrDictOptions(DICT_TYPE.FX_WAREHOUSE_FEATURE)"
                     :key="dict.value"
@@ -132,7 +132,7 @@
               <el-form-item label="收货经销商" prop="receiveDealer">
                 <el-select
                   v-model="formData.receiveDealer"
-                  placeholder="请选择销售经销商"
+                  placeholder="请选择收售经销商"
                   clearable
                   filterable
                   style="width: 100%"
@@ -174,8 +174,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="退货业务类型" prop="returnBusinessType">
-                <el-select v-model="formData.returnBusinessType" placeholder="请选择退货业务类型">
+              <el-form-item label="退货业务类型" prop="returnBusinessType" >
+                <el-select v-model="formData.returnBusinessType" placeholder="请选择退货业务类型" :disabled="true">
                   <el-option
                     v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_TYPE)"
                     :key="dict.value"
@@ -297,7 +297,6 @@ import { ReturnOrderApi, ReturnOrderVO } from '@/api/fx/returnorder'
 import { SubCompanyInfoApi } from '@/api/fx/subcompanyinfo'
 import ConsigneeIcon from '@/views/fx/ordersinfo/components/ConsigneeIcon.vue'
 import { CustomerInfoApi, CustomerInfoVO } from '@/api/fx/customerinfo'
-import { ref } from 'vue'
 import ConsigneeTable from '@/views/fx/ordersinfo/components/consigneeTable.vue'
 import OrderTable from '@/views/fx/returnorder/components/orderTable.vue'
 import { SendRepositoryApi } from '@/api/fx/sendrepository'
@@ -314,6 +313,7 @@ import {
   Back
 } from '@element-plus/icons-vue'
 import { useTagsViewStore } from '@/store/modules/tagsView'
+import {Goods} from "@/views/fx/ordersinfo/data";
 
 /** FX 销售退货单 表单 */
 defineOptions({ name: 'ReturnOrderForm' })
@@ -391,13 +391,47 @@ const handleClickOrderRow = (data: OrdersInfoVO) => {
     formData.value.originOrder = res.orderId as string
     formData.value.receiveDealer = res.supplierId as number
     formData.value.warehouse = res.warehouse as string
-    formData.value.returnUserId = res.distributorId as number
     formData.value.returnType = 0
+    formData.value.warehouseFeature = '0'
     formData.value.originQuantity = res.sendQuantity as number
     originData.value = res.ordersDetails
+
+    // 直接使用接口返回的经销商信息
+    if (res.distributorId) {
+      formData.value.returnUserId = Number(res.distributorId)
+      const selectedConsignee = {
+        id: res.distributorId,
+        distributorName: res.distributorName
+      } as CustomerInfoVO
+
+      // 更新consigneeList和consigneeMap
+      if (!consigneeList.value?.some(item => item.id === res.distributorId)) {
+        consigneeList.value?.push(selectedConsignee)
+        consigneeMap.value?.set(selectedConsignee.id, selectedConsignee)
+      }
+
+      nextTick(() => {
+        if (selectRef.value) {
+          selectRef.value.selectedLabel = res.distributorName
+        }
+      })
+    }
+    console.log(formData.value.returnUserId)
     console.log(originData.value)
   })
 }
+
+watch(
+  () => ordersDetailFormRef.value?.totalCount,
+  (newVal) => {
+    if (newVal < 20) {
+      formData.value.returnBusinessType = 0
+    } else {
+      formData.value.returnBusinessType = 1
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 /**
  * 获取经销商列表
@@ -467,9 +501,9 @@ const getConsigneeList = async () => {
   CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 }).then((res) => {
     consigneeList.value = res.list
     consigneeMap.value = res.list.reduce((map, item) => {
-      map[item.id] = item
+      map.set(item.id, item)  // 修改为使用Map的set方法
       return map
-    }, new Map())
+    }, new Map<number, CustomerInfoVO>())  // 明确指定Map类型
     consigneeTotal.value = res.total
   })
 }
@@ -575,6 +609,7 @@ const init = () =>{
   querySubCompanyList()
   queryWarehouseList()
   getConsigneeList()
+  formData.value.returnBusinessType = 0
 }
 
 

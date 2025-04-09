@@ -104,12 +104,12 @@
       <el-table-column label="创建者" align="center" prop="creator" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
-          <router-link :to="'/fx/returnorder/create?id=' + scope.row.id">
-            <el-button @click.stop v-if="scope.row.orderStatus === 0" link type="primary"
-              v-hasPermi="['fx:orders-info:update']">
-              编辑
-            </el-button>
-          </router-link>
+<!--          <router-link :to="'/fx/returnorder/create?id=' + scope.row.id">-->
+<!--            <el-button @click.stop v-if="scope.row.orderStatus === 0" link type="primary"-->
+<!--              v-hasPermi="['fx:orders-info:update']">-->
+<!--              编辑-->
+<!--            </el-button>-->
+<!--          </router-link>-->
           <el-button link type="danger" @click="handleDelete(scope.row.id)" v-hasPermi="['fx:return-order:delete']">
             删除
           </el-button>

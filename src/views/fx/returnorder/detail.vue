@@ -38,7 +38,9 @@
           </div>
           <div class="info-item">
             <span class="info-label">退货经销商</span>
-            <span class="info-value">{{ formData.returnDealerName }}</span>
+            <span class="info-value">
+              <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="formData.returnDealer" />
+            </span>
           </div>
           <div class="info-item">
             <span class="info-label">收货仓库</span>
@@ -52,12 +54,14 @@
           </div>
           <div class="info-item">
             <span class="info-label">收货经销商</span>
-            <span class="info-value">{{ formData.receiveDealer }}</span>
+            <span class="info-value">
+              <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="formData.receiveDealer" />
+            </span>
           </div>
-          <div class="info-item">
-            <span class="info-label">收货方</span>
-            <span class="info-value">{{ formData.distributorName }}</span>
-          </div>
+<!--          <div class="info-item">-->
+<!--            <span class="info-label">收货方</span>-->
+<!--            <span class="info-value">{{ formData.distributorName }}</span>-->
+<!--          </div>-->
           <div class="info-item">
             <span class="info-label">物流单号</span>
             <span class="info-value">{{ formData.logisticsNumber }}</span>
@@ -101,13 +105,13 @@
                 <td>{{ item.skuId }}</td>
                 <td>{{ item.skuName }}</td>
                 <td>{{ item.category }}</td>
-                <td>{{ item.salePrice }}</td>
+                <td>{{ item.originalPrice }}</td>
                 <td>{{ item.returnPrice }}</td>
-                <td>{{ item.returnCount }}</td>
-                <td>{{ ((item.returnCount || 0) * (item.returnPrice || 0))?.toFixed(2) || 0 }}</td>
                 <td>{{ item.count }}</td>
+                <td>{{ item.saleAmt }}</td>
+                <td>{{ item.originalCount }}</td>
                 <td>
-                  <dict-tag :type="DICT_TYPE.FX_DETAIL_RETURN_TYPE" :value="item.saleType" />
+                  <dict-tag :type="DICT_TYPE.FX_DETAIL_RETURN_TYPE" :value="item.retType" />
                 </td>
               </tr>
             </tbody>
