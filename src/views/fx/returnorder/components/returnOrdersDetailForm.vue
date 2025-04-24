@@ -101,7 +101,7 @@ const handleReturnCountChange = (e, $index) => {
     message.warning('退货数量不能大于原单数量')
     formData.value[$index].returnCount = count
   }
-  formData.value[$index].saleAmt = (formData.value[$index].returnCount || 0) * (formData.value[$index].returnPrice || 0)
+  formData.value[$index].returnAmt = (formData.value[$index].returnCount || 0) * (formData.value[$index].returnPrice || 0)
 }
 
 const handleReturnPriceChange = (e, $index) => {
@@ -111,7 +111,8 @@ const handleReturnPriceChange = (e, $index) => {
     message.warning('退货价不能大于原单价格')
     formData.value[$index].returnPrice = formData.value[$index].salePrice
   }
-  formData.value[$index].saleAmt = (formData.value[$index].returnCount || 0) * (formData.value[$index].returnPrice || 0)
+  formData.value[$index].returnAmt = (formData.value[$index].returnCount || 0) * (formData.value[$index].returnPrice || 0)
+  console.log(formData.value[$index].returnAmt)
 }
 
 // 表单引用，和可见
@@ -229,11 +230,12 @@ const validate = () => {
 
 /** 表单值 */
 const getData = () => {
+  console.log(formData.value)
   return formData.value.map(item => ({
     ...item,
     originalPrice: item.salePrice,
     count: item.returnCount,
-    saleAmt: item.returnAmt,
+    saleAmt:  (item.returnCount || 0) * (item.returnPrice || 0),
     originalCount: item.count,
     retType: item.saleType,
   }))

@@ -42,10 +42,14 @@
       </el-tab-pane>
       <el-tab-pane label="账号信息" name="customerAccount">
         <el-table :data="dataInfo.customerAccounts" class="-mt-10px">
-          <el-table-column label="序号" type="index" width="70" />
-          <el-table-column label="业务主体" min-width="220" prop="company"/>
-          <el-table-column label="余额" min-width="150" prop="balance"/>
           <el-table-column label="账户编号" min-width="150" prop="accountId"/>
+<!--          <el-table-column label="序号" type="index" width="70" />-->
+          <el-table-column label="业务主体" min-width="220" prop="company" >
+            <template #default="{ row }">
+              <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="row.company" />
+            </template>
+          </el-table-column>
+          <el-table-column label="余额" min-width="150" prop="balance"/>
           <el-table-column label="暂扣金额" min-width="150" prop="detainAmount"/>
           <el-table-column label="是否冻结" min-width="150" prop="isActive">
             <template #default="{ row }">

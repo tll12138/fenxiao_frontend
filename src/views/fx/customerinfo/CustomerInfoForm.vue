@@ -201,9 +201,9 @@ const formRules = reactive({
   distributorLevel: [
     { required: true, message: '请选择分销商级别', trigger: 'blur' },
   ],
-  customerChannelDistribute: [
-    { required: true, message: '请选择客户渠道属性', trigger: 'blur' },
-  ],
+  // customerChannelDistribute: [
+  //   { required: true, message: '请选择客户渠道属性', trigger: 'blur' },
+  // ],
   // customerType: [
   //   { required: true, message: '请选择客户类型', trigger: 'blur' },
   // ],

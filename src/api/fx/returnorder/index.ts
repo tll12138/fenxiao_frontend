@@ -63,4 +63,14 @@ export const ReturnOrderApi = {
   exportReturnOrder: async (params) => {
     return await request.download({ url: `/fx/return-order/export-excel`, params })
   },
+
+  //销售退货单取消审核
+  cancelProcessInstanceByStartUser: async (data) => {
+    return await request.post({ url: '/fx/return-order/cancel-by-start-user', data: data })
+  },
+
+  //销售退货单发起流程
+  startProcessInstanceByStartUser: async (id: number) => {
+    return await request.get({ url: '/fx/return-order/submit-by-start-user?id=' + id })
+  }
 }

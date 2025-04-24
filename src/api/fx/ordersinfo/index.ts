@@ -83,6 +83,11 @@ export const OrdersInfoApi = {
     return await request.download({ url: `/fx/orders-info/export-excel`, params })
   },
 
+  // 查询待退货销售单
+  getReturnOrdersInfoPage: async (params: any) => {
+    return await request.get({ url: `/fx/orders-info/return_page`, params })
+  },
+
 // ==================== 子表（分销-销售订单明细） ====================
 
   // 获得分销-销售订单明细列表
@@ -93,5 +98,9 @@ export const OrdersInfoApi = {
 
   cancelProcessInstanceByStartUser: async (data) => {
     return await request.post({ url: '/fx/orders-info/cancel-by-start-user', data: data })
+  },
+
+  startProcessInstanceByStartUser: async (id: number) => {
+    return await request.get({ url: '/fx/orders-info/start-by-start-user?id='+ id })
   }
 }

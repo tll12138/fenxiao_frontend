@@ -16,23 +16,30 @@
       >
         <ElRow>
           <ElCol :span="8">
-            <el-form-item label="分销商名称" prop="distributorName">
+            <el-form-item label="单据编号" prop="orderId">
               <el-input
-                v-model="queryParams.distributorName"
-                placeholder="请输入分销商名称"
+                v-model="queryParams.orderId"
+                placeholder="请输入单据编号"
                 clearable
                 class="!w-240px"
               />
             </el-form-item>
           </ElCol>
-          <ElCol :offset="1" :span="8">
-            <el-form-item label="分销商编号" prop="distributorNum">
-              <el-input
-                v-model="queryParams.distributorNum"
-                placeholder="请输入分销商编号"
-                clearable
-                class="!w-240px"
-              />
+<!--          <ElCol :span="8">-->
+<!--            <el-form-item label="收货方" prop="distributorName">-->
+<!--              <el-input-->
+<!--                v-model="queryParams.distributorName"-->
+<!--                placeholder="请输入收货方"-->
+<!--                clearable-->
+<!--                class="!w-240px"-->
+<!--              />-->
+<!--            </el-form-item>-->
+<!--          </ElCol>-->
+          <ElCol :span="8">
+            <el-form-item label="单据日期" prop="orderDate">
+              <el-date-picker v-model="queryParams.orderDate" value-format="YYYY-MM-DD HH:mm:ss" type="daterange"
+                              start-placeholder="开始日期" end-placeholder="结束日期"
+                              :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]" class="!w-240px" />
             </el-form-item>
           </ElCol>
           <ElCol :offset="1" :span="6">
@@ -116,7 +123,7 @@ const companyMap = ref(new Map<number, string>())
 
 const open = async () => {
   dialogVisible.value = true
-  dialogTitle.value = '选择销售原单'
+  dialogTitle.value = '待退货销售单'
   await getList()
 }
 const getCompanyList = async () => {
@@ -128,7 +135,7 @@ const getCompanyList = async () => {
 const getList = async () => {
   formLoading.value = true
   try {
-    const data = await OrdersInfoApi.getOrdersInfoPage(queryParams)
+    const data = await OrdersInfoApi.getReturnOrdersInfoPage(queryParams)
     orderList.value = data.list
     total.value = data.total
   } finally {

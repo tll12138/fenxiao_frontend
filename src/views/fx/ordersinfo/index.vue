@@ -34,23 +34,11 @@
       <!-- 单据日期-->
 
       <el-form-item label="收货方" prop="distributorId">
-        <el-select
-          ref="selectRef"
-          class="search-select select-form"
-          :suffix-icon="ConsigneeIcon as any"
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
           v-model="queryParams.distributorId"
-          @change="handleChange"
-          placeholder="请选择收货方"
-          filterable
-          clearable
-        >
-          <el-option
-            v-for="dict in consigneeList"
-            :key="dict.id"
-            :label="dict.distributorName"
-            :value="dict.id"
-          />
-        </el-select>
+          @update:modelValue="handleChange"
+        />
       </el-form-item>
       <!-- 收货方-->
 
@@ -295,6 +283,15 @@
               >
                 取消审核
               </el-button>
+              <el-button
+                v-if="scope.row.orderStatus === 0"
+                link
+                type="primary"
+                @click.stop="handleSubmit(scope.row)"
+                v-hasPermi="['fx:orders-info:update']"
+              >
+                发起审核
+              </el-button>
             </div>
             <div>
               <el-button
@@ -328,10 +325,10 @@ import download from '@/utils/download'
 import { OrdersInfoApi, OrdersInfoVO } from '@/api/fx/ordersinfo'
 import { SubCompany } from '@/views/fx/customerinfo/data'
 import { SubCompanyInfoApi } from '@/api/fx/subcompanyinfo'
-import ConsigneeIcon from '@/views/fx/ordersinfo/components/ConsigneeIcon.vue'
-import { CustomerInfoApi, CustomerInfoVO } from '@/api/fx/customerinfo'
 import ConsigneeTable from '@/views/fx/ordersinfo/components/consigneeTable.vue'
 import { ElMessageBox } from 'element-plus'
+import ConsigneeSelect from '@/components/Consignee/ConsigneeSelect.vue'
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 销售单 列表 */
 defineOptions({ name: 'OrdersInfo' })
@@ -484,8 +481,6 @@ const tableRef = ref()
  */
 const consigneeRef = ref() //收货方表格引用
 const consigneeList = ref<CustomerInfoVO[]>() //收货方数据
-const consigneeMap = ref<Map<number, CustomerInfoVO>>(new Map<number, CustomerInfoVO>())
-const consigneeTotal = ref<number>() //收货方数据
 
 const getCompanyList = async () => {
   subCompanyList.value = await SubCompanyInfoApi.getSubCompanyInfoList()
@@ -558,19 +553,6 @@ const ClickAndExpandRow = (row) => {
 }
 
 /**
- * 获取收货方列表
- */
-const getConsigneeList = async () => {
-  CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 }).then((res) => {
-    consigneeList.value = res.list
-    consigneeMap.value = res.list.reduce((map, item) => {
-      map[item.id] = item
-      return map
-    }, new Map())
-    consigneeTotal.value = res.total
-  })
-}
-/**
  选择收货方表格数据并回显到表单中
  */
 const handleClickConsigneeRow = (data: CustomerInfoVO) => {
@@ -603,22 +585,32 @@ const handleCancel = async (row) => {
   await getList()
 }
 
+const handleSubmit = async (id: number) => {
+  try {
+    // 二次确认
+    await message.confirm('确定要提交审核吗？')
+    // 发起流程
+    await OrdersInfoApi.startProcessInstanceByStartUser(id)
+    message.success(t('common.success'))
+    // 刷新列表
+    await getList()
+  } catch { }
+}
+
 /**
  * 选择框的引用-用来定义点击事件
  */
-const selectRef = ref()
 const route = useRoute()
+const consigneeSelectRef = ref()
 watch(route, getList)
 
 /** 初始化 **/
 onMounted(() => {
   getCompanyList()
-  getConsigneeList()
   getList()
   nextTick(() => {
-    if (selectRef.value) {
-      // 自定义点击事件逻辑
-      const select = selectRef.value?.suffixRef
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
       select.onclick = (event: Event) => {
         event.stopPropagation()
         consigneeRef.value.open()

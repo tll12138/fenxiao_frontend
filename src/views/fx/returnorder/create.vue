@@ -501,7 +501,7 @@ const getConsigneeList = async () => {
   CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 }).then((res) => {
     consigneeList.value = res.list
     consigneeMap.value = res.list.reduce((map, item) => {
-      map.set(item.id, item)  // 修改为使用Map的set方法
+      map.set(item.id, item);  // 修改为使用Map的set方法
       return map
     }, new Map<number, CustomerInfoVO>())  // 明确指定Map类型
     consigneeTotal.value = res.total

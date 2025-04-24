@@ -165,10 +165,9 @@
           <dict-tag :type="DICT_TYPE.FX_CUSTOMER_DISTRIBUTE" :value="scope.row.customerChannelDistribute" />
         </template>
       </el-table-column>
-      <el-table-column label="业务属性" align="center" prop="belong">
+      <el-table-column label="业务归属" align="center" prop="belongTo">
         <template #default="scope">
-          <dict-span-tag v-if="scope.row.belong" :type="DICT_TYPE.FX_BELONG" :value="scope.row.belong" />
-          <span v-else>-</span>
+          <dict-span-tag :type="DICT_TYPE.FX_BELONG" :value="scope.row.belongTo" />
         </template>
       </el-table-column>
       <el-table-column label="客户类型" align="center" prop="customerType" >

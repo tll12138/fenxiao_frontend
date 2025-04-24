@@ -1,7 +1,7 @@
 <template>
   <ContentWrap>
     <!-- 搜索工作栏 -->
-    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true" label-width="78px">
+    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true" label-width="80px">
       <el-form-item label="单据编号" prop="orderId">
         <el-input v-model="queryParams.orderId" placeholder="请输入单据编号" clearable @keyup.enter="handleQuery"
           class="!w-240px" />
@@ -23,10 +23,18 @@
         <el-input v-model="queryParams.originOrder" placeholder="请输入原销售单" clearable @keyup.enter="handleQuery"
           class="!w-240px" />
       </el-form-item>
-      <el-form-item label="退货方" prop="returnUserId">
-        <el-input v-model="queryParams.returnUserId" placeholder="请输入退货方" clearable @keyup.enter="handleQuery"
-          class="!w-240px" />
+<!--      <el-form-item label="退货方" prop="returnUserId">-->
+<!--        <el-input v-model="queryParams.returnUserId" placeholder="请输入退货方" clearable @keyup.enter="handleQuery"-->
+<!--          class="!w-240px" />-->
+<!--      </el-form-item>-->
+      <el-form-item label="退货方" prop="returnUserId" label-width="80px">
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
+          v-model="queryParams.returnUserId"
+          @update:modelValue="handleChange"
+        />
       </el-form-item>
+
       <el-form-item label="物流单号" prop="logisticsNumber">
         <el-input v-model="queryParams.logisticsNumber" placeholder="请输入物流单号" clearable @keyup.enter="handleQuery"
           class="!w-240px" />
@@ -95,22 +103,37 @@
           <dict-tag :type="DICT_TYPE.FX_RETURN_TYPE" :value="scope.row.returnType" />
         </template>
       </el-table-column>
-      <el-table-column label="原销售单" align="center" prop="originOrder" />
+      <el-table-column label="原销售单" align="center" prop="originOrder"  min-width="120"/>
       <el-table-column label="退货方" align="center" prop="returnUserName" />
       <el-table-column label="物流单号" align="center" prop="logisticsNumber" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="总退货金额" align="center" prop="totalReturnAmount" />
       <el-table-column label="总退货数量" align="center" prop="totalReturnQuantity" />
       <el-table-column label="创建者" align="center" prop="creator" />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" min-width="90">
         <template #default="scope">
-<!--          <router-link :to="'/fx/returnorder/create?id=' + scope.row.id">-->
-<!--            <el-button @click.stop v-if="scope.row.orderStatus === 0" link type="primary"-->
-<!--              v-hasPermi="['fx:orders-info:update']">-->
-<!--              编辑-->
-<!--            </el-button>-->
-<!--          </router-link>-->
-          <el-button link type="danger" @click="handleDelete(scope.row.id)" v-hasPermi="['fx:return-order:delete']">
+          <el-button
+            link
+            type="primary"
+            v-if="scope.row.orderStatus === 0"
+            @click="handleSubmit(scope.row.id)"
+            v-hasPermi="['fx:return-order:update']">
+            提交审核
+          </el-button>
+          <el-button
+            v-if="scope.row.orderStatus === 1"
+            link
+            type="primary"
+            @click.stop="handleCancel(scope.row)"
+            v-hasPermi="['fx:return-order:update']"
+          >
+            取消审核
+          </el-button>
+          <el-button
+            link type="danger"
+            v-if="scope.row.orderStatus === 0"
+            @click="handleDelete(scope.row.id)"
+            v-hasPermi="['fx:return-order:delete']">
             删除
           </el-button>
         </template>
@@ -120,6 +143,7 @@
     <Pagination :total="total" v-model:page="queryParams.pageNo" v-model:limit="queryParams.pageSize"
       @pagination="getList" />
   </ContentWrap>
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
 </template>
 
 <script setup lang="ts">
@@ -127,6 +151,11 @@ import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import download from '@/utils/download'
 import { ReturnOrderApi, ReturnOrderVO } from '@/api/fx/returnorder'
 import ReturnOrderForm from './create.vue'
+import {ElMessageBox} from "element-plus";
+import {OrdersInfoApi} from "@/api/fx/ordersinfo";
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** FX 销售退货单 列表 */
 defineOptions({ name: 'ReturnOrder' })
@@ -210,8 +239,61 @@ const handleExport = async () => {
   }
 }
 
+//取消审核
+const handleCancel = async (row) => {
+  // 二次确认
+  const { value } = await ElMessageBox.prompt('请输入取消原因', '取消流程', {
+    confirmButtonText: t('common.ok'),
+    cancelButtonText: t('common.cancel'),
+    inputPattern: /^[\s\S]*.*\S[\s\S]*$/, // 判断非空，且非空格
+    inputErrorMessage: '取消原因不能为空'
+  })
+  // 发起取消
+  const data = {
+    id: row.processInstanceId,
+    orderId: row.id,
+    reason: value
+  }
+  console.log(data)
+  await ReturnOrderApi.cancelProcessInstanceByStartUser(data)
+  message.success('取消成功')
+  // 刷新列表
+  await getList()
+}
+
+const handleSubmit = async (id: number) => {
+  try {
+    // 二次确认
+    await message.confirm('确定要提交审核吗？')
+    // 发起流程
+    await ReturnOrderApi.startProcessInstanceByStartUser(id)
+    message.success(t('common.success'))
+    // 刷新列表
+    await getList()
+  } catch { }
+}
+
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.returnUserId = data.id
+}
+const handleChange = (row = {}) => {
+  queryParams.distributorId = row?.id //
+}
+const consigneeSelectRef = ref()
+const consigneeRef = ref()
+
 /** 初始化 **/
 onMounted(() => {
   getList()
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>

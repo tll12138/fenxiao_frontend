@@ -6,7 +6,7 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
+      label-width="120px"
     >
 <!--      <el-form-item label="商品数量" prop="productQuantity">-->
 <!--        <el-input-->
@@ -173,15 +173,21 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-<!--      <el-form-item label="业务归属" prop="businessAffiliation">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.businessAffiliation"-->
-<!--          placeholder="请输入业务归属"-->
-<!--          clearable-->
-<!--          @keyup.enter="handleQuery"-->
-<!--          class="!w-240px"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <el-form-item label="业务归属" prop="businessAffiliation">
+        <el-select
+          v-model="queryParams.businessAffiliation"
+          placeholder="请输入业务归属"
+          clearable
+          class="!w-240px"
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BELONG)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
 <!--      <el-form-item label="单价" prop="price">-->
 <!--        <el-input-->
 <!--          v-model="queryParams.price"-->
@@ -271,7 +277,7 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
+    <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="false">
 <!--      <el-table-column label="主键" align="center" prop="id" />-->
       <el-table-column label="订单编号" align="center" prop="soId" />
       <el-table-column label="客商" align="center" prop="customerid" />
@@ -284,8 +290,20 @@
       <!--      <el-table-column label="区县" align="center" prop="district" />-->
       <!--      <el-table-column label="详细地址" align="center" prop="address" />-->
       <el-table-column label="收货人" align="center" prop="contact" />
-      <el-table-column label="业务归属" align="center" prop="businessAffiliation" />
-      <el-table-column label="收款经销商" align="center" prop="payingDistributorId" />
+      <el-table-column
+        label="业务归属"
+        align="center"
+        prop="businessAffiliation"
+      >
+        <template #default="scope">
+          <dict-span-tag :type="DICT_TYPE.FX_BELONG" :value="scope.row.businessAffiliation" />
+        </template>
+      </el-table-column>
+      <el-table-column label="收款经销商" align="center" prop="payingDistributorId" >
+        <template #default="scope">
+          <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.payingDistributorId" />
+        </template>
+      </el-table-column>
       <el-table-column label="快递公司" align="center" prop="expressCompany" />
       <el-table-column label="是否生成销售单" align="center" prop="isSalesOrderGenerated">
         <template #default="scope">
@@ -299,7 +317,11 @@
         </template>
       </el-table-column>
       <el-table-column label="快递单号" align="center" prop="trackingNumber" />
-      <el-table-column label="无痕发货" align="center" prop="isTraceless" />
+      <el-table-column label="无痕发货" align="center" prop="isTraceless" >
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isTraceless" />
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
 <!--      <el-table-column label="收货电话" align="center" prop="mobile" />-->
 <!--      <el-table-column label="快递公司ID" align="center" prop="expressCompanyId" />-->
