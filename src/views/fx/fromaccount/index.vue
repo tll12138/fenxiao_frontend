@@ -6,7 +6,7 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
+      label-width="100px"
     >
       <el-form-item label="打款账户号" prop="account">
         <el-input
@@ -17,13 +17,20 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="所属分销商" prop="customerId">
+      <el-form-item label="打款方名称" prop="accountName">
         <el-input
-          v-model="queryParams.customerId"
-          placeholder="请输入所属分销商"
+          v-model="queryParams.accountName"
+          placeholder="请输入打款方名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="所属分销商" prop="customerId">
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
+          v-model="queryParams.customerId"
+          @update:modelValue="handleChange"
         />
       </el-form-item>
       <el-form-item label="账户类型" prop="accountType">
@@ -41,15 +48,15 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="说明" prop="remark">
-        <el-input
-          v-model="queryParams.remark"
-          placeholder="请输入说明"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="说明" prop="remark">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.remark"-->
+<!--          placeholder="请输入说明"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="是否有效" prop="isActive">
         <el-select
           v-model="queryParams.isActive"
@@ -65,53 +72,45 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="累计打款次数" prop="totalNum">
-        <el-input
-          v-model="queryParams.totalNum"
-          placeholder="请输入累计打款次数"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="累计打款金额" prop="totalAmt">
-        <el-input
-          v-model="queryParams.totalAmt"
-          placeholder="请输入累计打款金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="打款方名称" prop="accountName">
-        <el-input
-          v-model="queryParams.accountName"
-          placeholder="请输入打款方名称"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="所属账户名称" prop="accountId">
-        <el-input
-          v-model="queryParams.accountId"
-          placeholder="请输入所属账户名称"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="累计打款次数" prop="totalNum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.totalNum"-->
+<!--          placeholder="请输入累计打款次数"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="累计打款金额" prop="totalAmt">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.totalAmt"-->
+<!--          placeholder="请输入累计打款金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+
+<!--      <el-form-item label="所属账户名称" prop="accountId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.accountId"-->
+<!--          placeholder="请输入所属账户名称"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -139,9 +138,10 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
+<!--      <el-table-column label="序号" align="center" prop="id" />-->
       <el-table-column label="打款账户号" align="center" prop="account" />
-      <el-table-column label="所属分销商" align="center" prop="customerId" />
+      <el-table-column label="打款方名称" align="center" prop="accountName" />
+      <el-table-column label="所属分销商" align="center" prop="customerName" />
       <el-table-column label="账户类型" align="center" prop="accountType" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.ACCOUNT_TYPE" :value="scope.row.isActive" />
@@ -155,8 +155,7 @@
       </el-table-column>
       <el-table-column label="累计打款次数" align="center" prop="totalNum" />
       <el-table-column label="累计打款金额" align="center" prop="totalAmt" />
-      <el-table-column label="打款方名称" align="center" prop="accountName" />
-      <el-table-column label="所属账户名称" align="center" prop="accountId" />
+<!--      <el-table-column label="所属账户名称" align="center" prop="accountId" />-->
       <el-table-column
         label="创建时间"
         align="center"
@@ -196,6 +195,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <FromAccountForm ref="formRef" @success="getList" />
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
 </template>
 
 <script setup lang="ts">
@@ -204,6 +204,9 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { FromAccountApi, FromAccountVO } from '@/api/fx/fromaccount'
 import FromAccountForm from './FromAccountForm.vue'
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /**  分销打款账户 列表 */
 defineOptions({ name: 'FromAccount' })
@@ -219,6 +222,7 @@ const queryParams = reactive({
   pageSize: 10,
   account: undefined,
   customerId: undefined,
+  customerName: undefined,
   accountType: undefined,
   remark: undefined,
   isActive: undefined,
@@ -289,8 +293,35 @@ const handleExport = async () => {
   }
 }
 
+/**
+ * 分销商表格
+ */
+const consigneeRef = ref() //收货方表格引用
+const consigneeList = ref<CustomerInfoVO[]>() //收货方数据
+const consigneeSelectRef = ref()
+
+const handleChange = (row) => {
+  queryParams.customerId = row.id
+}
+/**
+ 选择分销商表格数据并回显到表单中
+ */
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.customerId = data.id
+}
+
 /** 初始化 **/
 onMounted(() => {
   getList()
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>

@@ -317,6 +317,7 @@ import { UtilsApi } from "@/api/fx/utils";
 import { SendRepositoryApi } from "@/api/fx/sendrepository";
 import { SubCompanyInfoApi } from "@/api/fx/subcompanyinfo";
 import { useTagsViewStore } from "@/store/modules/tagsView";
+import { getWarehouseOptions } from '@/utils/repositoryUtils'
 import {
   Goods,
   Sell,
@@ -729,16 +730,16 @@ const getConsigneeList = async () => {
  * 获取发货仓库列表
  */
 const warehouseOptions = ref([])//发货仓库列表
-const queryWarehouseList = async () => {
-  SendRepositoryApi.getSendRepositoryPage({ pageNo: 1, pageSize: 100 }).then((res) => {
-    warehouseOptions.value = res.list.map(item => {
-      return {
-        label: item.name,
-        value: item.code
-      }
-    })
-  })
-}
+// const queryWarehouseList = async () => {
+//   SendRepositoryApi.getSendRepositoryPage({ pageNo: 1, pageSize: 100 }).then((res) => {
+//     warehouseOptions.value = res.list.map(item => {
+//       return {
+//         label: item.name,
+//         value: item.code
+//       }
+//     })
+//   })
+// }
 const handleWarehouseChange = (val: number) => {
   console.log("warehouseCode:",val)
   formData.value.warehouseCode = val;
@@ -787,7 +788,9 @@ const init = () =>{
   getConsigneeList()
 
   // 获取仓库信息列表
-  queryWarehouseList()
+  getWarehouseOptions().then(res => {
+    warehouseOptions.value = res
+  })
 
   // 获取子公司列表
   querySubCompanyList()

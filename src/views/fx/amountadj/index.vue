@@ -17,15 +17,15 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="调整金额" prop="amount">
-        <el-input
-          v-model="queryParams.amount"
-          placeholder="请输入调整金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="调整金额" prop="amount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.amount"-->
+<!--          placeholder="请输入调整金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="调整日期" prop="orderDate">
         <el-date-picker
           v-model="queryParams.orderDate"
@@ -46,15 +46,15 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="调整说明" prop="remark">
-        <el-input
-          v-model="queryParams.remark"
-          placeholder="请输入调整说明"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="调整说明" prop="remark">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.remark"-->
+<!--          placeholder="请输入调整说明"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="调整类型" prop="type">
         <el-select
           v-model="queryParams.type"
@@ -70,26 +70,26 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="调整后余额" prop="adjustBalance">
-        <el-input
-          v-model="queryParams.adjustBalance"
-          placeholder="请输入调整后余额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="调整后余额" prop="adjustBalance">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.adjustBalance"-->
+<!--          placeholder="请输入调整后余额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -109,11 +109,11 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
+<!--      <el-table-column label="序号" align="center" prop="id" />-->
       <el-table-column label="流程编号" align="center" prop="soId" />
       <el-table-column label="调整金额" align="center" prop="amount" />
       <el-table-column label="调整日期" align="center" prop="orderDate" />
-      <el-table-column label="调整账户" align="center" prop="account" />
+      <el-table-column label="调整账户" align="center" prop="accountName" />
       <el-table-column label="调整说明" align="center" prop="remark" />
       <el-table-column label="调整类型" align="center" prop="type" >
         <template #default="scope">
@@ -121,13 +121,13 @@
         </template>
       </el-table-column>
       <el-table-column label="调整后余额" align="center" prop="adjustBalance" />
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
+<!--      <el-table-column-->
+<!--        label="创建时间"-->
+<!--        align="center"-->
+<!--        prop="createTime"-->
+<!--        :formatter="dateFormatter"-->
+<!--        width="180px"-->
+<!--      />-->
     </el-table>
     <!-- 分页 -->
     <Pagination
@@ -163,6 +163,7 @@ const queryParams = reactive({
   pageSize: 10,
   soId: undefined,
   amount: undefined,
+  accountName: undefined,
   orderDate: [],
   account: undefined,
   remark: undefined,

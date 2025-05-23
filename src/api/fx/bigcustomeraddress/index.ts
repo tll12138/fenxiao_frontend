@@ -4,6 +4,7 @@ import request from '@/config/axios'
 export interface BigCustomerAddressVO {
   id?: number // 序号
   customerId?: number // 分销商
+  customerName?: string // 分销商名称
   province?: string // 省
   city?: string // 市
   district?: string // 区

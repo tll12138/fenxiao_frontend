@@ -7,7 +7,7 @@
           <el-icon class="title-icon">
             <Document />
           </el-icon>
-          <span class="page-title">销售退货单</span>
+          <span class="page-title">账户收款单</span>
         </div>
         <img src="@/assets/imgs/pqsy.png" class="logo-image" />
       </div>      
@@ -30,7 +30,7 @@
         >
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-form-item label="退货类型" prop="returnType">
+              <el-form-item label="单据编号" prop="orderNo">
                 <el-select
                   v-model="formData.returnType"
                   placeholder="请选择退货类型"
@@ -200,48 +200,6 @@
       </div>
     </ContentWrap>
 
-    <!-- 左侧固定汇总信息 -->
-    <div class="side-summary">
-      <el-card class="summary-card" shadow="hover">
-        <div class="summary-items">
-          <div class="summary-item">
-            <div class="item-icon">
-              <el-icon><ShoppingCart /></el-icon>
-            </div>
-            <div class="item-content">
-              <div class="item-label">原单数量</div>
-              <div class="item-value">{{ ordersDetailFormRef?.totalCount || 0 }}</div>
-            </div>
-          </div>
-          
-          <div class="divider"></div>
-          
-          <div class="summary-item">
-            <div class="item-icon">
-              <el-icon><Wallet /></el-icon>
-            </div>
-            <div class="item-content">
-              <div class="item-label">总退货金额</div>
-              <div class="item-value">¥{{ ordersDetailFormRef?.totalReturnAmount?.toFixed(2) || '0.00' }}</div>
-            </div>
-          </div>
-          
-          <div class="divider"></div>
-          
-          <div class="summary-item">
-            <div class="item-icon">
-              <el-icon><SoldOut /></el-icon>
-            </div>
-            <div class="item-content">
-              <div class="item-label">总退货数量</div>
-              <div class="item-value">{{ ordersDetailFormRef?.totalReturnCount || 0 }}</div>
-            </div>
-          </div>
-        </div>
-      </el-card>
-    </div>
-    
-
     <!-- 右侧固定按钮 -->
     <div class="side-actions">
       <el-card class="action-card" shadow="hover">
@@ -317,7 +275,7 @@ import { useTagsViewStore } from '@/store/modules/tagsView'
 import {Goods} from "@/views/fx/ordersinfo/data";
 
 /** FX 销售退货单 表单 */
-defineOptions({ name: 'ReturnOrderForm' })
+defineOptions({ name: 'AccountCollectionForm' })
 const { push, currentRoute } = useRouter() // 路由
 const message = useMessage() // 消息弹窗
 const { delView } = useTagsViewStore() // 视图操作

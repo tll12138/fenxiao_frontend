@@ -45,4 +45,9 @@ export const SkuCostpriceApi = {
   exportSkuCostprice: async (params) => {
     return await request.download({ url: `/fx/sku-costprice/export-excel`, params })
   },
-}
+
+  // 下载商品成本导入模板
+  importSkuCostpriceTemplate : async () => {
+    return request.download({ url: '/fx/sku-costprice/get-import-template' })
+  }
+}

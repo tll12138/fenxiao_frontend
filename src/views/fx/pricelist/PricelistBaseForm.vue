@@ -7,12 +7,22 @@
       label-width="100px"
       v-loading="formLoading"
     >
+      <el-form-item label="品牌" prop="brandId">
+        <el-select v-model="formData.brandId" placeholder="请输入品牌" clearable filterable style="width: 240px" >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BRAND)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="产品编码" prop="skuId">
         <el-input v-model="formData.skuId" placeholder="请输入产品编码" />
       </el-form-item>
-      <el-form-item label="规格" prop="category">
-        <el-input v-model="formData.category" placeholder="请输入规格" />
-      </el-form-item>
+<!--      <el-form-item label="规格" prop="category">-->
+<!--        <el-input v-model="formData.category" placeholder="请输入规格" />-->
+<!--      </el-form-item>-->
       <el-form-item label="销售最低价" prop="saleprice">
         <el-input v-model="formData.saleprice" placeholder="请输入销售最低价" />
       </el-form-item>
@@ -30,19 +40,9 @@
         <el-input v-model="formData.name" placeholder="请输入产品名称" />
       </el-form-item>
       <el-form-item label="是否基础类型" prop="isNormal">
-        <el-select v-model="formData.isNormal" placeholder="请选择是否基础类型">
+        <el-select v-model="formData.isNormal" placeholder="请选择是否基础类型" :disabled="true">
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.YES_NO)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="品牌" prop="brand">
-        <el-select v-model="formData.brand" placeholder="请输入品牌" clearable filterable style="width: 240px" >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.FX_BRAND)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -86,10 +86,22 @@ const formData = ref({
   distributorLevel: undefined,
   name: undefined,
   isNormal: undefined,
-  brand: undefined,
+  brandId: undefined,
   createTime: undefined,
 })
 const formRules = reactive({
+  saleprice: [
+    { required: true, message: '销售最低价不能为空', trigger: 'blur' }
+  ],
+  distributorLevel: [
+    { required: true, message: '客户等级不能为空', trigger: 'blur' }
+  ],
+  skuId: [
+    { required: true, message: '产品编码不能为空', trigger: 'blur' }
+  ],
+  brandId: [
+    { required: true, message: '品牌不能为空', trigger: 'blur' }
+  ]
 })
 const formRef = ref() // 表单 Ref
 
@@ -175,8 +187,8 @@ const resetForm = () => {
     saleprice: undefined,
     distributorLevel: undefined,
     name: undefined,
-    isNormal: undefined,
-    brand: undefined,
+    isNormal: '1',
+    brandId: undefined,
     createTime: undefined,
   }
   formRef.value?.resetFields()

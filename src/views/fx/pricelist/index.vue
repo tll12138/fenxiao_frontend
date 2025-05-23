@@ -41,24 +41,24 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="规格" prop="category">
-        <el-input
-          v-model="queryParams.category"
-          placeholder="请输入规格"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="销售最低价" prop="saleprice">
-        <el-input
-          v-model="queryParams.saleprice"
-          placeholder="请输入销售最低价"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="规格" prop="category">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.category"-->
+<!--          placeholder="请输入规格"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="销售最低价" prop="saleprice">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.saleprice"-->
+<!--          placeholder="请输入销售最低价"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="客户等级" prop="distributorLevel">
         <el-select
           v-model="queryParams.distributorLevel"
@@ -83,24 +83,24 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="是否基础类型" prop="isNormal">
+<!--      <el-form-item label="是否基础类型" prop="isNormal">-->
+<!--        <el-select-->
+<!--          v-model="queryParams.isNormal"-->
+<!--          placeholder="请选择是否基础类型"-->
+<!--          clearable-->
+<!--          class="!w-240px"-->
+<!--        >-->
+<!--          <el-option-->
+<!--            v-for="dict in getStrDictOptions(DICT_TYPE.YES_NO)"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+      <el-form-item label="品牌" prop="brandId">
         <el-select
-          v-model="queryParams.isNormal"
-          placeholder="请选择是否基础类型"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.YES_NO)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="品牌" prop="brand">
-        <el-select
-          v-model="queryParams.brand"
+          v-model="queryParams.brandId"
           placeholder="请选择品牌"
           clearable
           class="!w-240px"
@@ -113,17 +113,17 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -134,6 +134,13 @@
           v-hasPermi="['fx:pricelist:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
+        </el-button>
+        <el-button
+          type="warning"
+          plain
+          @click="handleImport"
+        >
+          <Icon icon="ep:upload" class="mr-5px" /> 导入
         </el-button>
         <el-button
           type="success"
@@ -151,7 +158,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
+<!--      <el-table-column label="序号" align="center" prop="id" />-->
       <el-table-column label="客户" align="center" prop="customer" />
       <el-table-column label="产品编码" align="center" prop="skuId" />
       <el-table-column label="规格" align="center" prop="category" />
@@ -162,14 +169,14 @@
         </template>
       </el-table-column>
       <el-table-column label="产品名称" align="center" prop="name" />
-      <el-table-column label="是否基础类型" align="center" prop="isNormal">
+<!--      <el-table-column label="是否基础类型" align="center" prop="isNormal">-->
+<!--        <template #default="scope">-->
+<!--          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isNormal" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column label="品牌" align="center" prop="brandId" >
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isNormal" />
-        </template>
-      </el-table-column>
-      <el-table-column label="品牌" align="center" prop="brand" >
-        <template #default="scope">
-          <dict-span-tag v-if="scope.row.brand" :type="DICT_TYPE.FX_BRAND" :value="scope.row.brand" />
+          <dict-span-tag v-if="scope.row.brand" :type="DICT_TYPE.FX_BRAND" :value="scope.row.brandId" />
           <span v-else>-</span>
         </template>
       </el-table-column>
@@ -177,7 +184,7 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        :formatter="dateFormatter"
+        :formatter="dateFormatter2"
         width="180px"
       />
       <el-table-column label="操作" align="center">
@@ -212,16 +219,16 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <PricelistForm ref="formRef" @success="getList" />
+  <PriceListImportForm ref="importFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
-import { dateFormatter } from '@/utils/formatTime'
+import {dateFormatter, dateFormatter2} from '@/utils/formatTime'
 import download from '@/utils/download'
 import { PricelistApi, PricelistVO } from '@/api/fx/pricelist'
 import PricelistForm from './PricelistForm.vue'
 import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from "@/utils/dict";
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
-import {ref} from "vue";
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 分销价格对照 列表 */
@@ -249,8 +256,8 @@ const queryParams = reactive({
   saleprice: undefined,
   distributorLevel: undefined,
   name: undefined,
-  isNormal: undefined,
-  brand: undefined,
+  isNormal: 0,
+  brandId: undefined,
   createTime: [],
 })
 const queryFormRef = ref() // 搜索的表单
@@ -297,6 +304,12 @@ const handleDelete = async (id: number) => {
     // 刷新列表
     await getList()
   } catch {}
+}
+
+/** 导入 */
+const importFormRef = ref()
+const handleImport = () => {
+  importFormRef.value.open()
 }
 
 /** 导出按钮操作 */

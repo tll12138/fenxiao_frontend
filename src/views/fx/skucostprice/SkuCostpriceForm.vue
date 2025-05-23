@@ -8,14 +8,8 @@
       v-loading="formLoading"
     >
       <el-form-item label="品牌" prop="brand">
-        <el-select v-model="formData.brand" placeholder="请选择品牌">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BRAND)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+        <el-input v-model="formData.brand" placeholder="请输入品牌"/>
+
       </el-form-item>
       <el-form-item label="商品编码" prop="skuId">
         <el-input v-model="formData.skuId" placeholder="请输入商品编码" />
@@ -26,18 +20,25 @@
       <el-form-item label="规格" prop="value">
         <el-input v-model="formData.value" placeholder="请输入规格" />
       </el-form-item>
-<!--      <el-form-item label="品类" prop="type">-->
-<!--        <el-select v-model="formData.type" placeholder="请选择品类">-->
-<!--          <el-option-->
-<!--            v-for="dict in getDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
-<!--            :key="dict.value"-->
-<!--            :label="dict.label"-->
-<!--            :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
-      <el-form-item label="属性" prop="paid">
-        <el-input v-model="formData.paid" placeholder="请输入属性" />
+      <el-form-item label="品类"  prop="type" >
+        <el-select v-model="formData.type" placeholder="请选择品类">
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_GOODS_ATTRIBUTES)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="属性"  prop="paid" >
+        <el-select v-model="formData.paid" placeholder="请选择属性">
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_GOODS_NATURE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="财务结算价" prop="costPrice">
         <el-input v-model="formData.costPrice" placeholder="请输入财务结算价" />

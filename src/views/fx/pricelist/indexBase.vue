@@ -41,9 +41,9 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="品牌" prop="brand">
+      <el-form-item label="品牌" prop="brandId">
         <el-select
-          v-model="queryParams.brand"
+          v-model="queryParams.brandId"
           placeholder="请选择品牌"
           clearable
           class="!w-240px"
@@ -66,6 +66,13 @@
           v-hasPermi="['fx:pricelist:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
+        </el-button>
+        <el-button
+          type="warning"
+          plain
+          @click="handleImport"
+        >
+          <Icon icon="ep:upload" class="mr-5px" /> 导入
         </el-button>
         <el-button
           type="success"
@@ -92,12 +99,7 @@
         </template>
       </el-table-column>
       <el-table-column label="产品名称" align="center" prop="name" />
-      <el-table-column label="品牌" align="center" prop="brand" >
-        <template #default="scope">
-          <dict-span-tag v-if="scope.row.brand" :type="DICT_TYPE.FX_BRAND" :value="scope.row.brand" />
-          <span v-else>-</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="品牌" align="center" prop="brand" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
@@ -138,6 +140,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <PricelistForm ref="formRef" @success="getList" />
+  <PriceBaseListImportForm ref="importFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -145,13 +148,19 @@ import download from '@/utils/download'
 import { PricelistApi, PricelistVO } from '@/api/fx/pricelist'
 import PricelistForm from './PricelistBaseForm.vue'
 import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from "@/utils/dict";
-import {ref} from "vue";
 
 /** 分销价格对照 列表 */
 defineOptions({ name: 'Pricelist' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
+
+/** 导入 */
+const importFormRef = ref()
+const handleImport = () => {
+  importFormRef.value.open()
+}
+
 
 const currentPage = ref(1)
 const pageSize = ref(20)
@@ -169,6 +178,7 @@ const queryParams = reactive({
   name: undefined,
   isNormal: undefined,
   brand: undefined,
+  brandId: undefined,
   createTime: [],
 })
 const queryFormRef = ref() // 搜索的表单
@@ -223,7 +233,7 @@ const handleUpdateAllCustomers = async (id: number) => {
   try {
     // 开始更新
     await PricelistApi.processPriceUpdate(id)
-    message.success(t('common.delSuccess'))
+    message.success('更新成功')
     // 刷新列表
     await getList()
   } catch {}
@@ -237,7 +247,7 @@ const handleExport = async () => {
     // 发起导出
     exportLoading.value = true
     const data = await PricelistApi.exportPricelist(queryParams)
-    download.excel(data, '分销价格对照.xls')
+    download.excel(data, '分销商品基础价格.xls')
   } catch {
   } finally {
     exportLoading.value = false

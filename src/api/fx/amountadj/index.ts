@@ -7,6 +7,7 @@ export interface AmountAdjVO {
   amount: number // 调整金额
   orderDate: string // 调整日期
   account: string // 调整账户
+  accountName: string // 调整账户名称
   remark: string // 调整说明
   type: number // 调整类型
   adjustBalance: number // 调整后余额

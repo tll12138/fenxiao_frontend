@@ -120,22 +120,28 @@
         </el-select>
       </el-form-item>
       <el-form-item label="客商" prop="customerid">
-        <el-input
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
           v-model="queryParams.customerid"
-          placeholder="请输入客商"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+          @update:modelValue="handleChange"
         />
       </el-form-item>
       <el-form-item label="发货仓" prop="warehouseid">
-        <el-input
+        <el-select
           v-model="queryParams.warehouseid"
-          placeholder="请输入发货仓"
+          placeholder="请选择发货仓"
           clearable
-          @keyup.enter="handleQuery"
+          filterable
           class="!w-240px"
-        />
+          @change="handleWarehouseChange"
+        >
+          <el-option
+            v-for="item in warehouseOptions"
+            :key="item.id"
+            :label="item.label"
+            :value="item.id"
+          />
+        </el-select>
       </el-form-item>
 <!--      <el-form-item label="销售单号" prop="saleno">-->
 <!--        <el-input-->
@@ -146,14 +152,20 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="快递公司" prop="expressCompany">
-        <el-input
-          v-model="queryParams.expressCompany"
+      <el-form-item label="快递公司" prop="expressCompanyId">
+        <el-select
+          v-model="queryParams.expressCompanyId"
           placeholder="请输入快递公司"
           clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_WL)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
 <!--      <el-form-item label="快递单号" prop="trackingNumber">-->
 <!--        <el-input-->
@@ -238,14 +250,14 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-          v-hasPermi="['fx:import-order:create']"
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
-        </el-button>
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          @click="openForm('create')"-->
+<!--          v-hasPermi="['fx:import-order:create']"-->
+<!--        >-->
+<!--          <Icon icon="ep:plus" class="mr-5px" /> 新增-->
+<!--        </el-button>-->
         <el-button
           type="warning"
           plain
@@ -280,11 +292,11 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="false">
 <!--      <el-table-column label="主键" align="center" prop="id" />-->
       <el-table-column label="订单编号" align="center" prop="soId" />
-      <el-table-column label="客商" align="center" prop="customerid" />
+      <el-table-column label="客商" align="center" prop="customername" />
       <el-table-column label="商品编码" align="center" prop="skuId" />
       <el-table-column label="商品数量" align="center" prop="productQuantity" />
       <el-table-column label="单价" align="center" prop="price" />
-      <el-table-column label="发货仓" align="center" prop="warehouseid" />
+      <el-table-column label="发货仓" align="center" prop="warehousename" />
       <!--      <el-table-column label="省份" align="center" prop="province" />-->
       <!--      <el-table-column label="城市" align="center" prop="city" />-->
       <!--      <el-table-column label="区县" align="center" prop="district" />-->
@@ -329,19 +341,19 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        :formatter="dateFormatter"
+        :formatter="dateFormatter2"
         width="180px"
       />
       <el-table-column label="操作" align="center" width="120">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-            v-hasPermi="['fx:import-order:update']"
-          >
-            编辑
-          </el-button>
+<!--          <el-button-->
+<!--            link-->
+<!--            type="primary"-->
+<!--            @click="openForm('update', scope.row.id)"-->
+<!--            v-hasPermi="['fx:import-order:update']"-->
+<!--          >-->
+<!--            编辑-->
+<!--          </el-button>-->
           <el-button
             link
             type="danger"
@@ -366,14 +378,20 @@
   <ImportOrderForm ref="formRef" @success="getList" />
   <!-- 客商代发导入对话框 -->
   <OrderImportForm ref="importFormRef" @success="getList" />
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
 </template>
 
 <script setup lang="ts">
 import { getIntDictOptions, getStrDictOptions, DICT_TYPE } from '@/utils/dict'
-import { dateFormatter } from '@/utils/formatTime'
+import {dateFormatter, dateFormatter2} from '@/utils/formatTime'
 import download from '@/utils/download'
 import { ImportOrderApi, ImportOrderVO } from '@/api/fx/importorder'
-import ImportOrderForm from './ImportOrderForm.vue'
+import OrderImportForm from './OrderImportForm.vue'
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import ImportOrderForm from "@/views/fx/importorder/ImportOrderForm.vue";
+import { getWarehouseOptions } from '@/utils/repositoryUtils'
 
 /** 客商代发单 列表 */
 defineOptions({ name: 'ImportOrder' })
@@ -399,7 +417,9 @@ const queryParams = reactive({
   isShipped: undefined,
   isSalesOrderGenerated: undefined,
   customerid: undefined,
+  customername: undefined,
   warehouseid: undefined,
+  warehousename: undefined,
   saleno: undefined,
   expressCompany: undefined,
   trackingNumber: undefined,
@@ -494,9 +514,46 @@ const handleGenerateSales = async () => {
     generateLoading.value = false
   }
 }
+const warehouseOptions = ref([])//发货仓库列表
+// 获取仓库信息列表
+
+const handleWarehouseChange = (val: number) => {
+  console.log("warehouseCode:",val)
+  queryParams.warehouseid = val;
+}
+
+/**
+ * 收货方表格
+ */
+const consigneeRef = ref() //收货方表格引用
+const consigneeList = ref<CustomerInfoVO[]>() //收货方数据
+const consigneeSelectRef = ref()
+
+const handleChange = (row) => {
+  queryParams.customerid = row.id
+}
+/**
+ 选择收货方表格数据并回显到表单中
+ */
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.customerid = data.id
+}
 
 /** 初始化 **/
 onMounted(() => {
+  getWarehouseOptions().then(res => {
+    warehouseOptions.value = res
+  })
   getList()
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>

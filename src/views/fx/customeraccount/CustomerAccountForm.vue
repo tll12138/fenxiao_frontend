@@ -22,13 +22,13 @@
         />
       </el-form-item>
       <el-form-item label="余额" prop="balance">
-        <el-input v-model="formData.balance" placeholder="请输入余额" />
+        <el-input v-model="formData.balance" placeholder="请输入余额" :disabled="formType === 'update'"/>
       </el-form-item>
       <el-form-item label="账户编号" prop="accountId">
         <el-input v-model="formData.accountId" placeholder="请输入账户编号" readonly />
       </el-form-item>
       <el-form-item label="暂扣金额" prop="detainAmount">
-        <el-input v-model="formData.detainAmount" placeholder="请输入暂扣金额" />
+        <el-input v-model="formData.detainAmount" placeholder="请输入暂扣金额" :disabled="formType === 'update'"/>
       </el-form-item>
       <el-form-item label="是否冻结" prop="isActive">
         <el-select v-model="formData.isActive" placeholder="请输入是否冻结" filterable :disabled="isEdit">
@@ -54,7 +54,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="货补虚拟金额" prop="vAmount">
-        <el-input v-model="formData.vAmount" placeholder="请输入货补虚拟金额" />
+        <el-input v-model="formData.vAmount" placeholder="请输入货补虚拟金额" :disabled="formType === 'update'"/>
       </el-form-item>
       <el-form-item label="是否允许超额提货" prop="isAllow">
         <el-select v-model="formData.isAllow" placeholder="请输入是否允许超额提货" filterable :disabled="isEdit">
@@ -83,7 +83,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="暂扣货补金额" prop="zkVAmount">
-        <el-input v-model="formData.zkVAmount" placeholder="请输入暂扣货补金额" />
+        <el-input v-model="formData.zkVAmount" placeholder="请输入暂扣货补金额" :disabled="formType === 'update'"/>
       </el-form-item>
 <!--      <el-form-item label="账户名" prop="name">-->
 <!--        <el-input v-model="formData.name" placeholder="请输入账户名" />-->
@@ -99,7 +99,6 @@
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { CustomerAccountApi, CustomerAccountVO } from '@/api/fx/customeraccount'
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
-import {ref} from "vue";
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 import {OrdersInfoApi} from "@/api/fx/ordersinfo";
 
@@ -208,6 +207,7 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     distributorId: undefined,
+    distributorName: undefined,
     balance: undefined,
     accountId: undefined,
     detainAmount: undefined,

@@ -95,7 +95,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { DICT_TYPE } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions,getDictOptions } from '@/utils/dict'
 import { ImportOrderApi, ImportOrderVO } from '@/api/fx/importorder'
 
 /** 客商代发单 表单 */

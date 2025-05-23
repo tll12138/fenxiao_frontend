@@ -14,8 +14,10 @@ export interface ImportOrderVO {
   mobile: string // 收货电话
   isShipped: number // 是否发货
   isSalesOrderGenerated: number // 是否生成销售单
-  customerid: string // 客商
-  warehouseid: string // 发货仓
+  customerid: undefined,
+  customername: undefined,
+  warehouseid: undefined,
+  warehousename: undefined,
   saleno: string // 销售单号
   expressCompany: string // 快递公司
   trackingNumber: string // 快递单号
@@ -23,8 +25,8 @@ export interface ImportOrderVO {
   businessAffiliation: number // 业务归属
   price: number // 单价
   isTraceless: number // 无痕发货
-  payingDistributorId: string // 收款经销商
-  expressCompanyId: string // 快递公司ID
+  payingDistributorId: number // 收款经销商
+  expressCompanyId: number // 快递公司ID
 }
 
 // 客商代发单 API

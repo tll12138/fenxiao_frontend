@@ -8,21 +8,30 @@
       :inline="true"
       label-width="90px"
     >
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="商品编码" prop="skuId">
         <el-input
           v-model="queryParams.skuId"
           placeholder="请输入商品编码"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="商品名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入商品名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -37,15 +46,15 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="商品资料id" prop="goodId">
-        <el-input
-          v-model="queryParams.goodId"
-          placeholder="请输入商品资料id"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-260px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="商品资料id" prop="goodId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.goodId"-->
+<!--          placeholder="请输入商品资料id"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-260px"-->
+<!--        />-->
+<!--      </el-form-item>-->
 <!--      <el-form-item label="良品库存" prop="qty">-->
 <!--        <el-input-->
 <!--          v-model="queryParams.qty"-->
@@ -73,39 +82,39 @@
           class="!w-240px"
         />
       </el-form-item>
-<!--      <el-form-item label="仓库类型" prop="type">-->
-<!--        <el-select-->
-<!--          v-model="queryParams.type"-->
-<!--          placeholder="请选择仓库类型"-->
+      <el-form-item label="仓库类型" prop="type">
+        <el-select
+          v-model="queryParams.type"
+          placeholder="请选择仓库类型"
+          clearable
+          class="!w-240px"
+        >
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.FX_REPOSITORY_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+<!--      <el-form-item label="所属仓库" prop="warehouseId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.warehouseId"-->
+<!--          placeholder="请输入所属仓库"-->
 <!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
 <!--          class="!w-240px"-->
-<!--        >-->
-<!--          <el-option-->
-<!--            v-for="dict in getDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
-<!--            :key="dict.value"-->
-<!--            :label="dict.label"-->
-<!--            :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
+<!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="所属仓库" prop="warehouseId">
-        <el-input
-          v-model="queryParams.warehouseId"
-          placeholder="请输入所属仓库"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="仓库编码" prop="warehouseCode">
-        <el-input
-          v-model="queryParams.warehouseCode"
-          placeholder="请输入仓库编码"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="仓库编码" prop="warehouseCode">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.warehouseCode"-->
+<!--          placeholder="请输入仓库编码"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
 <!--      <el-form-item label="销售出库数" prop="saleQty">-->
 <!--        <el-input-->
 <!--          v-model="queryParams.saleQty"-->
@@ -115,37 +124,34 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="数据渠道" prop="channel">
-        <el-input
-          v-model="queryParams.channel"
-          placeholder="请输入数据渠道"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="数据渠道" prop="channel">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.channel"-->
+<!--          placeholder="请输入数据渠道"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="商品品牌" prop="brand">
-        <el-input
+        <el-select
           v-model="queryParams.brand"
           placeholder="请输入商品品牌"
           clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.FX_BRAND)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="规格" prop="value">
         <el-input
           v-model="queryParams.value"
           placeholder="请输入规格"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="商品名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入商品名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -179,21 +185,31 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
 <!--      <el-table-column label="序号" align="center" prop="id" />-->
-<!--      <el-table-column label="创建时间" align="center" prop="createTime" />-->
       <el-table-column label="商品编码" align="center" prop="skuId" />
       <el-table-column label="商品名称" align="center" prop="name" />
-<!--      <el-table-column label="条形码" align="center" prop="scanCode" />-->
-<!--      <el-table-column label="商品资料id" align="center" prop="goodId" />-->
-<!--      <el-table-column label="良品库存" align="center" prop="qty" />-->
-<!--      <el-table-column label="次品库存" align="center" prop="defectiveQty" />-->
-      <el-table-column label="仓库编码" align="center" prop="warehouseCode" />
-      <el-table-column label="仓库名称" align="center" prop="warehouseName" />
-      <el-table-column label="仓库类型" align="center" prop="type" />
-<!--      <el-table-column label="所属仓库" align="center" prop="warehouseId" />-->
-<!--      <el-table-column label="销售出库数" align="center" prop="saleQty" />-->
-      <el-table-column label="数据渠道" align="center" prop="channel" />
-      <el-table-column label="商品品牌" align="center" prop="brand" />
       <el-table-column label="规格" align="center" prop="value" />
+      <!--      <el-table-column label="条形码" align="center" prop="scanCode" />-->
+      <!--      <el-table-column label="商品资料id" align="center" prop="goodId" />-->
+      <el-table-column label="良品库存" align="center" prop="qty" />
+      <el-table-column label="次品库存" align="center" prop="defectiveQty" />
+      <!--      <el-table-column label="仓库编码" align="center" prop="warehouseCode" />-->
+      <el-table-column label="销售出库数" align="center" prop="saleQty" />
+      <el-table-column label="商品品牌" align="center" prop="brand" />
+      <el-table-column label="仓库名称" align="center" prop="warehouseName" />
+      <el-table-column label="仓库类型" align="center" prop="type" >
+      <template #default="scope">
+        <dict-tag :type="DICT_TYPE.FX_REPOSITORY_TYPE" :value="scope.row.type" />
+      </template>
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        :formatter="dateFormatter2"
+        width="180px"
+      />
+      <!--      <el-table-column label="所属仓库" align="center" prop="warehouseId" />-->
+      <!--      <el-table-column label="数据渠道" align="center" prop="channel" />-->
 <!--      <el-table-column label="操作" align="center">-->
 <!--        <template #default="scope">-->
 <!--          <el-button-->
@@ -229,10 +245,12 @@
 </template>
 
 <script setup lang="ts">
-import { DICT_TYPE } from '@/utils/dict'
+import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from '@/utils/dict'
 import download from '@/utils/download'
 import { InventoryDataApi, InventoryDataVO } from '@/api/fx/inventorydata'
 import InventoryDataForm from './InventoryDataForm.vue'
+import dayjs from "dayjs";
+import {dateFormatter, dateFormatter2} from "@/utils/formatTime";
 
 /** 分销商品库存 列表 */
 defineOptions({ name: 'InventoryData' })

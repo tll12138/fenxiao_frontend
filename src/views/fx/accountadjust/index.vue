@@ -17,15 +17,15 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="费用类型" prop="reason">
-        <el-input
-          v-model="queryParams.reason"
-          placeholder="请输入费用类型"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="费用类型" prop="reason">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.reason"-->
+<!--          placeholder="请输入费用类型"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="调整分销账户" prop="account">
         <el-input
           v-model="queryParams.account"
@@ -35,51 +35,51 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="调整说明" prop="remark">
-        <el-input
-          v-model="queryParams.remark"
-          placeholder="请输入调整说明"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="提交人" prop="submiter">
-        <el-input
-          v-model="queryParams.submiter"
-          placeholder="请输入提交人"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="调整金额" prop="adjAmount">
-        <el-input
-          v-model="queryParams.adjAmount"
-          placeholder="请输入调整金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="调整后账户余额" prop="afterAmount">
-        <el-input
-          v-model="queryParams.afterAmount"
-          placeholder="请输入调整后账户余额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="当前账户余额" prop="nowAmount">
-        <el-input
-          v-model="queryParams.nowAmount"
-          placeholder="请输入当前账户余额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="调整说明" prop="remark">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.remark"-->
+<!--          placeholder="请输入调整说明"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="提交人" prop="submiter">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.submiter"-->
+<!--          placeholder="请输入提交人"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="调整金额" prop="adjAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.adjAmount"-->
+<!--          placeholder="请输入调整金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="调整后账户余额" prop="afterAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.afterAmount"-->
+<!--          placeholder="请输入调整后账户余额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="当前账户余额" prop="nowAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.nowAmount"-->
+<!--          placeholder="请输入当前账户余额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="业务主体" prop="company">
         <el-select
           v-model="queryParams.company"
@@ -95,24 +95,24 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="当前暂扣账户金额" prop="nowTempAmount">
-        <el-input
-          v-model="queryParams.nowTempAmount"
-          placeholder="请输入当前暂扣账户金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="调整后暂扣账户金额" prop="afterTempAmount">
-        <el-input
-          v-model="queryParams.afterTempAmount"
-          placeholder="请输入调整后暂扣账户金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="当前暂扣账户金额" prop="nowTempAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.nowTempAmount"-->
+<!--          placeholder="请输入当前暂扣账户金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="调整后暂扣账户金额" prop="afterTempAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.afterTempAmount"-->
+<!--          placeholder="请输入调整后暂扣账户金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="调整类型" prop="type">
         <el-select
           v-model="queryParams.type"

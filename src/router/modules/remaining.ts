@@ -423,6 +423,16 @@ const remainingRouter: AppRouteRecordRaw[] = [
           title: '新建开票申请',
         },
       },
+      {
+        path: '/fx/accountcollection/create',
+        component: () => import('@/views/fx/accountcollection/create.vue'),
+        name: 'AccountCollectionForm',
+        meta: {
+          hidden: true,
+          noCache: true,
+          title: '新增账户收款单',
+        },
+      },
     ]
   },
 ]

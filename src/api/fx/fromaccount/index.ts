@@ -5,6 +5,7 @@ export interface FromAccountVO {
   id: number // 序号
   account: string // 打款账户号
   customerId: string // 所属分销商
+  customerName: string // 所属分销商
   accountType: number // 账户类型
   remark: string // 说明
   isActive: string // 是否有效
@@ -45,4 +46,4 @@ export const FromAccountApi = {
   exportFromAccount: async (params) => {
     return await request.download({ url: `/fx/from-account/export-excel`, params })
   },
-}
+}

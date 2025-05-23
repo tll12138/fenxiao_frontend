@@ -35,10 +35,10 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="账户编号" prop="accountId">
+      <el-form-item label="分销商名称" prop="distributorName">
         <el-input
-          v-model="queryParams.accountId"
-          placeholder="请输入账户编号"
+          v-model="queryParams.distributorName"
+          placeholder="请输入分销商名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -202,43 +202,43 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="分销商编号" align="center" prop="distributorId" />
+      <el-table-column label="分销商" align="center" prop="distributorName" />
       <el-table-column label="余额" align="center" prop="balance" />
-      <el-table-column label="账户编号" align="center" prop="accountId" />
+<!--      <el-table-column label="账户编号" align="center" prop="accountId" />-->
       <el-table-column label="暂扣金额" align="center" prop="detainAmount" />
       <el-table-column label="是否冻结" align="center" prop="isActive" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isActive" />
         </template>
       </el-table-column>
-      <el-table-column label="押金" align="center" prop="deposit" />
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
+<!--      <el-table-column label="押金" align="center" prop="deposit" />-->
+<!--      <el-table-column-->
+<!--        label="创建时间"-->
+<!--        align="center"-->
+<!--        prop="createTime"-->
+<!--        :formatter="dateFormatter"-->
+<!--        width="180px"-->
+<!--      />-->
       <el-table-column label="业务主体" align="center" prop="company">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.company" />
         </template>
       </el-table-column>
-      <el-table-column label="货补虚拟金额" align="center" prop="vAmount" />
-      <el-table-column label="是否允许超额提货" align="center" prop="isAllow" >
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isAllow" />
-        </template>
-      </el-table-column>
-      <el-table-column label="超额提货额度" align="center" prop="quota" />
-      <el-table-column label="是否计算货补" align="center" prop="isRep" >
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isRep" />
-        </template>
-      </el-table-column>
-      <el-table-column label="暂扣货补金额" align="center" prop="zkVAmount" />
+<!--      <el-table-column label="货补虚拟金额" align="center" prop="vAmount" />-->
+<!--      <el-table-column label="是否允许超额提货" align="center" prop="isAllow" >-->
+<!--        <template #default="scope">-->
+<!--          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isAllow" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="超额提货额度" align="center" prop="quota" />-->
+<!--      <el-table-column label="是否计算货补" align="center" prop="isRep" >-->
+<!--        <template #default="scope">-->
+<!--          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isRep" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="暂扣货补金额" align="center" prop="zkVAmount" />-->
 <!--      <el-table-column label="账户名" align="center" prop="name" />-->
-      <el-table-column label="备注" align="center" prop="remark" />
+<!--      <el-table-column label="备注" align="center" prop="remark" />-->
       <el-table-column label="操作" align="center" width="200">
         <template #default="scope">
           <el-button
@@ -307,6 +307,7 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   distributorId: undefined,
+  distributorName: undefined,
   balance: undefined,
   accountId: undefined,
   detainAmount: undefined,

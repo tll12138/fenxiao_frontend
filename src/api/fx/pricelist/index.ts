@@ -10,7 +10,7 @@ export interface PricelistVO {
   distributorLevel: number // 客户等级
   name: string // 产品名称
   isNormal: string // 是否基础类型
-  brand: string // 品牌
+  brandId: string // 品牌
   createrTime: Date // 创建时间
 }
 
@@ -50,4 +50,14 @@ export const PricelistApi = {
   processPriceUpdate: async (id: number) => {
     return await request.get({ url: `/fx/pricelist/price-update?id=` + id })
   },
+
+  // 下载分销价格对照导入模板
+  importPricelistTemplate : async () => {
+    return request.download({ url: '/fx/pricelist/get-import-template' })
+  },
+
+  // 下载分销商品基础价格导入模板
+  importPricelistTemplate : async () => {
+    return request.download({ url: '/fx/pricelist/get-import-base-template' })
+  }
 }

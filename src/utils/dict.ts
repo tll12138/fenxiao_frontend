@@ -252,5 +252,8 @@ export enum DICT_TYPE {
   FX_BILL_TYPE = 'fx_bill_type',//FX 发货仓库渠道
   ACCOUNT_TYPE = 'account_type',//FX 账户类型
   FX_FEE_TYPE = 'fx_fee_type',//FX 费用类型
+  FX_GOODS_ATTRIBUTES = 'fx_goods_attributes',//FX 分销商品属性
+  FX_GOODS_NATURE = 'fx_goods_nature',//FX 分销商品性质
+  FX_AUDIT_STATUS = 'fx_audit_status',//FX 分销审批状态
   FX_ACCOUNT_ADJUST_TYPE = 'fx_account_adjust_type'//FX 账户调整类型
 }

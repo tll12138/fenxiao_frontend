@@ -17,44 +17,44 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="月结总余额" prop="totalAmount">
-        <el-input
-          v-model="queryParams.totalAmount"
-          placeholder="请输入月结总余额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="暂扣金额" prop="withheldAmount">
-        <el-input
-          v-model="queryParams.withheldAmount"
-          placeholder="请输入暂扣金额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="可用余额" prop="availableAmount">
-        <el-input
-          v-model="queryParams.availableAmount"
-          placeholder="请输入可用余额"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="月结总余额" prop="totalAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.totalAmount"-->
+<!--          placeholder="请输入月结总余额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="暂扣金额" prop="withheldAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.withheldAmount"-->
+<!--          placeholder="请输入暂扣金额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="可用余额" prop="availableAmount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.availableAmount"-->
+<!--          placeholder="请输入可用余额"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="账户" prop="account">
         <el-input
           v-model="queryParams.account"
@@ -106,11 +106,17 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="序号" align="center" prop="id" />
+<!--      <el-table-column label="序号" align="center" prop="id" />-->
       <el-table-column label="年月" align="center" prop="month" />
       <el-table-column label="月结总余额" align="center" prop="totalAmount" />
       <el-table-column label="暂扣金额" align="center" prop="withheldAmount" />
       <el-table-column label="可用余额" align="center" prop="availableAmount" />
+      <el-table-column label="账户" align="center" prop="account" />
+      <el-table-column label="业务主体" align="center" prop="company" >
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.company" />
+        </template>
+      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -118,32 +124,26 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="账户" align="center" prop="account" />
-      <el-table-column label="业务主体" align="center" prop="company" >
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.company" />
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-            v-hasPermi="['fx:mon-settlement:update']"
-          >
-            编辑
-          </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-            v-hasPermi="['fx:mon-settlement:delete']"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="操作" align="center">-->
+<!--        <template #default="scope">-->
+<!--          <el-button-->
+<!--            link-->
+<!--            type="primary"-->
+<!--            @click="openForm('update', scope.row.id)"-->
+<!--            v-hasPermi="['fx:mon-settlement:update']"-->
+<!--          >-->
+<!--            编辑-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            link-->
+<!--            type="danger"-->
+<!--            @click="handleDelete(scope.row.id)"-->
+<!--            v-hasPermi="['fx:mon-settlement:delete']"-->
+<!--          >-->
+<!--            删除-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
     <!-- 分页 -->
     <Pagination

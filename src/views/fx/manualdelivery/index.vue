@@ -122,6 +122,7 @@
             删除
           </el-button>
           <el-button
+            v-if="scope.row.status != 2"
             link
             type="danger"
             @click="handleManualShipment(scope.row.id)"

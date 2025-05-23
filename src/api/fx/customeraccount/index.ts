@@ -4,6 +4,7 @@ import request from '@/config/axios'
 export interface CustomerAccountVO {
   id: number // ID
   distributorId: number // 分销商编号
+  distributorName: string // 分销商名称
   balance: number // 余额
   accountId: string // 账户编号
   detainAmount: number // 暂扣金额
@@ -50,4 +51,4 @@ export const CustomerAccountApi = {
   exportCustomerAccount: async (params) => {
     return await request.download({ url: `/fx/customer-account/export-excel`, params })
   },
-}
+}

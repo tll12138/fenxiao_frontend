@@ -11,9 +11,9 @@
       clearable
     >
       <el-option
-        v-for="dict in consigneeList"
+        v-for="dict in customerAccountList"
         :key="dict.id"
-        :label="dict.displayName"
+        :label="dict.distributorName"
         :value="dict.id"
       />
     </el-select>
@@ -21,20 +21,20 @@
 </template>
 
 <script setup lang="ts">
-import { CustomerInfoApi } from '@/api/fx/customerinfo'
 import ConsigneeIcon from '@/views/fx/ordersinfo/components/ConsigneeIcon.vue'
+import {CustomerAccountApi} from "@/api/fx/customeraccount";
 
 defineProps({
   modelValue: [Number, String]
 })
 
-const consigneeList = ref()
+const customerAccountList = ref()
 const selectRef = ref()
 
 // 获取收货方列表
 const loadConsigneeList = async () => {
-  const res = await CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 })
-  consigneeList.value = res.list
+  const res = await CustomerAccountApi.getCustomerAccountPage({ pageNo: 1, pageSize: 100 })
+  customerAccountList.value = res.list
 }
 
 // 暴露方法给父组件

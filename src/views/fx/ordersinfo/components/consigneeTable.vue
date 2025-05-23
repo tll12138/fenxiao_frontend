@@ -98,7 +98,6 @@
 import { ElTable } from 'element-plus'
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 import {DICT_TYPE} from "@/utils/dict";
-import {ref} from "vue";
 import Create from "diagram-js/lib/features/create/Create";
 import {SubCompanyInfoApi} from "@/api/fx/subcompanyinfo";
 
