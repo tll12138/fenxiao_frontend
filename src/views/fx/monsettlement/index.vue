@@ -111,7 +111,13 @@
       <el-table-column label="月结总余额" align="center" prop="totalAmount" />
       <el-table-column label="暂扣金额" align="center" prop="withheldAmount" />
       <el-table-column label="可用余额" align="center" prop="availableAmount" />
-      <el-table-column label="账户" align="center" prop="account" />
+      <el-table-column label="账户" align="center" prop="account">
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.account)">
+            {{ scope.row.accountName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="业务主体" align="center" prop="company" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.company" />
@@ -156,6 +162,11 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <MonSettlementForm ref="formRef" @success="getList" />
+  <CustomerAccountDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :account="currentAccount"
+  />
 </template>
 
 <script setup lang="ts">
@@ -164,6 +175,7 @@ import download from '@/utils/download'
 import { MonSettlementApi, MonSettlementVO } from '@/api/fx/monsettlement'
 import MonSettlementForm from './MonSettlementForm.vue'
 import {DICT_TYPE, getStrDictOptions} from "@/utils/dict";
+import CustomerAccountDetailForm from "@/views/fx/customeraccount/CustomerAccountDetailForm.vue";
 
 /** 分销账户月结 列表 */
 defineOptions({ name: 'MonSettlement' })
@@ -183,6 +195,7 @@ const queryParams = reactive({
   availableAmount: undefined,
   createTime: [],
   account: undefined,
+  accountName: undefined,
   company: undefined,
 })
 const queryFormRef = ref() // 搜索的表单
@@ -198,6 +211,19 @@ const getList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentAccount = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (account: string) => {
+  currentAccount.value = account
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.open(account)
 }
 
 /** 搜索按钮操作 */

@@ -171,7 +171,13 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
 <!--      <el-table-column label="序号" align="center" prop="id" />-->
-      <el-table-column label="分销商" align="center" prop="customerName" :show-overflow-tooltip="false" width="200"/>
+      <el-table-column label="分销商" align="center" prop="customerName" :show-overflow-tooltip="false" width="200">
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.customerId)">
+            {{ scope.row.customerName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="省" align="center" prop="province" />
       <el-table-column label="市" align="center" prop="city" />
       <el-table-column label="区" align="center" prop="district" />
@@ -242,6 +248,11 @@
   <!-- 表单弹窗：添加/修改 -->
   <BigCustomerAddressForm ref="formRef" @success="getList" />
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -253,6 +264,7 @@ import BigCustomerAddressForm from './BigCustomerAddressForm.vue'
 import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 import {CustomerInfoVO} from "@/api/fx/customerinfo";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /** 分销大客户地址 列表 */
 defineOptions({ name: 'BigCustomerAddress' })
@@ -357,6 +369,18 @@ const handleChange = (row) => {
 const handleClickConsigneeRow = (data: CustomerInfoVO) => {
   //@ts-ignore
   queryParams.customerId = data.id
+}
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
 }
 
 /** 初始化 **/

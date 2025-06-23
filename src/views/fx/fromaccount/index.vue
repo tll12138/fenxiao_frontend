@@ -141,7 +141,13 @@
 <!--      <el-table-column label="序号" align="center" prop="id" />-->
       <el-table-column label="打款账户号" align="center" prop="account" />
       <el-table-column label="打款方名称" align="center" prop="accountName" />
-      <el-table-column label="所属分销商" align="center" prop="customerName" />
+      <el-table-column label="所属分销商" align="center" prop="customerName" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.customerId)">
+            {{ scope.row.customerName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="账户类型" align="center" prop="accountType" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.ACCOUNT_TYPE" :value="scope.row.isActive" />
@@ -196,6 +202,11 @@
   <!-- 表单弹窗：添加/修改 -->
   <FromAccountForm ref="formRef" @success="getList" />
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -207,6 +218,7 @@ import FromAccountForm from './FromAccountForm.vue'
 import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 import {CustomerInfoVO} from "@/api/fx/customerinfo";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /**  分销打款账户 列表 */
 defineOptions({ name: 'FromAccount' })
@@ -291,6 +303,19 @@ const handleExport = async () => {
   } finally {
     exportLoading.value = false
   }
+}
+
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
 }
 
 /**

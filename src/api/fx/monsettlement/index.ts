@@ -8,6 +8,7 @@ export interface MonSettlementVO {
   withheldAmount: number // 暂扣金额
   availableAmount: number // 可用余额
   account: string // 账户
+  accountName: string // 账户名称
   company: string // 业务主体
 }
 
@@ -42,4 +43,4 @@ export const MonSettlementApi = {
   exportMonSettlement: async (params) => {
     return await request.download({ url: `/fx/mon-settlement/export-excel`, params })
   },
-}
+}

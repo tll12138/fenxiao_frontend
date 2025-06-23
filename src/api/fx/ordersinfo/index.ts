@@ -58,6 +58,11 @@ export const OrdersInfoApi = {
     return await request.get({ url: `/fx/orders-info/get?id=` + id })
   },
 
+  // 查询销售单详情
+  getOrdersInfoByOrderId: async (orderId: string) => {
+    return await request.get({ url: `/fx/orders-info/getByOrderId?orderId=` + orderId })
+  },
+
   // 新增销售单
   createOrdersInfo: async (data: OrdersInfoVO) => {
     return await request.post({ url: `/fx/orders-info/create`, data })

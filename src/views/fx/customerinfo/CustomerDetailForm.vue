@@ -32,7 +32,7 @@
             <dict-span-tag :type="DICT_TYPE.YES_NO" :value="dataInfo.isExcessOrder" />
           </el-descriptions-item>
           <el-descriptions-item label="最近下单日期">
-            {{dataInfo.latestOrderDate}}
+            {{formatDate(dataInfo.latestOrderDate)}}
           </el-descriptions-item>
           <el-descriptions-item label="品牌">
             <dict-span-tag :type="DICT_TYPE.FX_BRAND" :value="dataInfo.brand" />
@@ -80,6 +80,7 @@
 <script setup lang="ts">
 import {CustomerInfoApi} from "@/api/fx/customerinfo";
 import {CreateCustomerAddressVO} from "@/api/fx/customeraddress";
+import { formatDate } from '@/utils/formatTime'
 import {DICT_TYPE} from "@/utils/dict";
 import {CustomerAccountVO} from "@/api/fx/customeraccount";
 
@@ -122,7 +123,14 @@ const open = async (type: string, id: number) => {
   dialogTitle.value = t('action.' + type)
   dataInfo.value = await CustomerInfoApi.getCustomerInfo(id)
 }
-defineExpose({open}) // 提供 open 方法，用于打开弹窗
+
+const openById = async (id: string) => {
+  dialogVisible.value = true
+  dialogTitle.value = '账户详情'
+  // 调用新接口获取账户关联的客户信息
+  dataInfo.value = await CustomerInfoApi.getCustomerInfo(id)
+}
+defineExpose({open,openById}) // 提供 open 方法，用于打开弹窗
 
 
 </script>

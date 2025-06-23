@@ -229,7 +229,13 @@
           {{ scope.row.orderDate && scope.row.orderDate.length > 0 ? scope.row.orderDate.join('-') : '' }}
         </template>
       </el-table-column>
-      <el-table-column label="收货方" align="center" prop="distributorName" width="120" />
+      <el-table-column label="收货方" align="center" prop="distributorName" width="150" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.distributorId)">
+            {{ scope.row.distributorName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="物流公司" align="center" prop="logisticsCompany" width="100">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.FX_WL" :value="scope.row.logisticsCompany" />
@@ -317,6 +323,11 @@
     />
   </ContentWrap>
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -329,6 +340,7 @@ import ConsigneeTable from '@/views/fx/ordersinfo/components/consigneeTable.vue'
 import { ElMessageBox } from 'element-plus'
 import ConsigneeSelect from '@/components/Consignee/ConsigneeSelect.vue'
 import {CustomerInfoVO} from "@/api/fx/customerinfo";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /** 销售单 列表 */
 defineOptions({ name: 'OrdersInfo' })
@@ -512,6 +524,19 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
+}
+
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
 }
 
 /** 添加/修改操作 */

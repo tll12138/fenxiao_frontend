@@ -292,7 +292,13 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="false">
 <!--      <el-table-column label="主键" align="center" prop="id" />-->
       <el-table-column label="订单编号" align="center" prop="soId" />
-      <el-table-column label="客商" align="center" prop="customername" />
+      <el-table-column label="客商" align="center" prop="customername" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.customerid)">
+            {{ scope.row.customername}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="商品编码" align="center" prop="skuId" />
       <el-table-column label="商品数量" align="center" prop="productQuantity" />
       <el-table-column label="单价" align="center" prop="price" />
@@ -379,6 +385,11 @@
   <!-- 客商代发导入对话框 -->
   <OrderImportForm ref="importFormRef" @success="getList" />
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -392,6 +403,7 @@ import {CustomerInfoVO} from "@/api/fx/customerinfo";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 import ImportOrderForm from "@/views/fx/importorder/ImportOrderForm.vue";
 import { getWarehouseOptions } from '@/utils/repositoryUtils'
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /** 客商代发单 列表 */
 defineOptions({ name: 'ImportOrder' })
@@ -514,6 +526,21 @@ const handleGenerateSales = async () => {
     generateLoading.value = false
   }
 }
+
+
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
+}
+
 const warehouseOptions = ref([])//发货仓库列表
 // 获取仓库信息列表
 

@@ -210,6 +210,7 @@ const props = defineProps({
   id: propTypes.number.def(undefined)
 })
 const queryId = query.id as unknown as number // 从 URL 传递过来的 id 编号
+const queryOrderId = query.orderId as unknown as string // 从 URL 传递过来的 orderId 编号
 
 const loading = ref(false)
 
@@ -268,8 +269,13 @@ const getDetail = async () => {
   // 获取订单详情
   loading.value = false
   try {
-    const res = await OrdersInfoApi.getOrdersInfo(props.id || queryId);
-    Object.assign(formData, res);
+    if (queryOrderId) {
+      const res = await OrdersInfoApi.getOrdersInfoByOrderId(queryOrderId);
+      Object.assign(formData, res);
+    } else {
+      const res = await OrdersInfoApi.getOrdersInfo(props.id || queryId);
+      Object.assign(formData, res);
+    }
   } finally {
     loading.value = false
   }

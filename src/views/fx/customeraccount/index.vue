@@ -202,7 +202,13 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="分销商" align="center" prop="distributorName" />
+      <el-table-column label="分销商" align="center" prop="distributorName" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.distributorId)">
+            {{ scope.row.distributorName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="余额" align="center" prop="balance" />
 <!--      <el-table-column label="账户编号" align="center" prop="accountId" />-->
       <el-table-column label="暂扣金额" align="center" prop="detainAmount" />
@@ -272,6 +278,11 @@
   <!-- 表单弹窗：添加/修改 -->
   <CustomerAccountForm ref="formRef" @success="getList" />
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow"/>
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -283,6 +294,7 @@ import CustomerAccountForm from './CustomerAccountForm.vue'
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /** 分销商账号 列表 */
 defineOptions({ name: 'CustomerAccount' })
@@ -382,6 +394,19 @@ const handleExport = async () => {
   } finally {
     exportLoading.value = false
   }
+}
+
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
 }
 
 const handleChange = (row) => {

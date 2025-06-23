@@ -23,10 +23,6 @@
         <el-input v-model="queryParams.originOrder" placeholder="请输入原销售单" clearable @keyup.enter="handleQuery"
           class="!w-240px" />
       </el-form-item>
-<!--      <el-form-item label="退货方" prop="returnUserId">-->
-<!--        <el-input v-model="queryParams.returnUserId" placeholder="请输入退货方" clearable @keyup.enter="handleQuery"-->
-<!--          class="!w-240px" />-->
-<!--      </el-form-item>-->
       <el-form-item label="退货方" prop="returnUserId" label-width="80px">
         <ConsigneeSelect
           ref="consigneeSelectRef"
@@ -103,8 +99,22 @@
           <dict-tag :type="DICT_TYPE.FX_RETURN_TYPE" :value="scope.row.returnType" />
         </template>
       </el-table-column>
-      <el-table-column label="原销售单" align="center" prop="originOrder"  min-width="120"/>
-      <el-table-column label="退货方" align="center" prop="returnUserName" />
+      <el-table-column label="原销售单" align="center" prop="originOrder"  min-width="120">
+        <template #default="scope">
+          <router-link :to="'/fx/orders/detail?orderId=' + scope.row.originOrder" @click.stop>
+            <el-link type="primary" style="font-size: 13px">
+              {{ scope.row.originOrder }}
+            </el-link>
+          </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="退货方" align="center" prop="returnUserName" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.returnUserId)">
+            {{ scope.row.returnUserName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="物流单号" align="center" prop="logisticsNumber" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="总退货金额" align="center" prop="totalReturnAmount" />
@@ -144,6 +154,11 @@
       @pagination="getList" />
   </ContentWrap>
   <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -156,6 +171,7 @@ import {OrdersInfoApi} from "@/api/fx/ordersinfo";
 import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
 import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 import {CustomerInfoVO} from "@/api/fx/customerinfo";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
 
 /** FX 销售退货单 列表 */
 defineOptions({ name: 'ReturnOrder' })
@@ -271,6 +287,18 @@ const handleSubmit = async (id: number) => {
     // 刷新列表
     await getList()
   } catch { }
+}
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
 }
 
 const handleClickConsigneeRow = (data: CustomerInfoVO) => {

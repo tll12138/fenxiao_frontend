@@ -9,28 +9,11 @@
       label-width="68px"
     >
       <el-form-item label="客户" prop="customer">
-        <el-select
-          ref="selectRef"
-          class="!w-240px"
-          popper-class="customer-select-popper"
-          :suffix-icon="ConsigneeIcon as any"
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
           v-model="queryParams.customer"
-          @visible-change="handleSelectVisible"
-          @change="handleChange"
-          placeholder="请选择客户"
-          filterable
-          clearable
-        >
-          <el-option
-            v-for="dict in consigneeList"
-            :key="dict.id"
-            :label="dict.distributorName"
-            :value="dict.id"
-          />
-          <el-option v-if="loadingMore" key="loading" disabled>
-            <span class="text-gray-400">加载中...</span>
-          </el-option>
-        </el-select>
+          @update:modelValue="handleChange"
+        />
       </el-form-item>
       <el-form-item label="产品编码" prop="skuId">
         <el-input
@@ -153,6 +136,7 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
   </ContentWrap>
 
   <!-- 列表 -->
@@ -230,6 +214,8 @@ import PricelistForm from './PricelistForm.vue'
 import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from "@/utils/dict";
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
 import {CustomerInfoApi, CustomerInfoVO} from "@/api/fx/customerinfo";
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
 
 /** 分销价格对照 列表 */
 defineOptions({ name: 'Pricelist' })
@@ -326,24 +312,16 @@ const handleExport = async () => {
     exportLoading.value = false
   }
 }
+const consigneeSelectRef = ref()
+const consigneeRef = ref()
 
-const handleChange = (row) => {
-  queryParams.customer = row
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.customer = data.distributorName
 }
-
-/**
- * 获取客户列表
- */
-// const getConsigneeList = async () => {
-//   CustomerInfoApi.getCustomerInfoPage({pageNo: 1, pageSize: 100}).then((res) => {
-//     consigneeList.value = res.list
-//     consigneeMap.value = res.list.reduce((map, item) => {
-//       map[item.id] = item;
-//       return map;
-//     }, new Map());
-//     consigneeTotal.value = res.total
-//   })
-// }
+const handleChange = (row = {}) => {
+  queryParams.customer = row?.distributorName //
+}
 
 /** 处理下拉框显示/隐藏 */
 const handleSelectVisible = (visible: boolean) => {
@@ -408,13 +386,15 @@ const loadConsigneeList = async () => {
 /** 初始化 **/
 onMounted(() => {
   getList()
-  // getConsigneeList()
-  if (queryParams.customer) {
-    CustomerInfoApi.getCustomerInfo(queryParams.customer).then(res => {
-      consigneeList.value = [res]
-      consigneeMap.value[res.id] = res
-    })
-  }
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>
 <style>

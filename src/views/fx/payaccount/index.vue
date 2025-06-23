@@ -24,12 +24,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="分销商账户" prop="customerId">
-        <el-input
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
           v-model="queryParams.customerId"
-          placeholder="请输入分销商账户"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+          @update:modelValue="handleChange"
         />
       </el-form-item>
       <el-form-item label="付款账户" prop="accountNo">
@@ -100,7 +98,13 @@
           <dict-tag :type="DICT_TYPE.ACCOUNT_TYPE" :value="scope.row.payType" />
         </template>
       </el-table-column>
-      <el-table-column label="分销商账户" align="center" prop="customerId" />
+      <el-table-column label="分销商账户" align="center" prop="customerId" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.customerId)">
+            {{ scope.row.customerName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="付款账户" align="center" prop="accountNo" />
       <el-table-column label="说明" align="center" prop="description" />
       <el-table-column label="是否可用" align="center" prop="isActive">
@@ -147,6 +151,12 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <PayAccountForm ref="formRef" @success="getList" />
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -155,6 +165,10 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { PayAccountApi, PayAccountVO } from '@/api/fx/payaccount'
 import PayAccountForm from './PayAccountForm.vue'
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 分销支付账户 列表 */
 defineOptions({ name: 'PayAccount' })
@@ -170,6 +184,7 @@ const queryParams = reactive({
   pageSize: 10,
   payType: undefined,
   customerId: undefined,
+  customerName: undefined,
   accountNo: undefined,
   description: undefined,
   isActive: undefined,
@@ -235,9 +250,48 @@ const handleExport = async () => {
     exportLoading.value = false
   }
 }
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
+}
+
+/**
+ * 分销商表格
+ */
+const consigneeRef = ref() //收货方表格引用
+const consigneeList = ref<CustomerInfoVO[]>() //收货方数据
+const consigneeSelectRef = ref()
+
+const handleChange = (row) => {
+  queryParams.customer = row.id
+}
+/**
+ 选择分销商表格数据并回显到表单中
+ */
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.customer = data.id
+}
 
 /** 初始化 **/
 onMounted(() => {
   getList()
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>

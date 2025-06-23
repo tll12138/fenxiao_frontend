@@ -84,12 +84,10 @@
 <!--        />-->
 <!--      </el-form-item>-->
       <el-form-item label="分销商" prop="customer">
-        <el-input
+        <ConsigneeSelect
+          ref="consigneeSelectRef"
           v-model="queryParams.customer"
-          placeholder="请输入分销商"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+          @update:modelValue="handleChange"
         />
       </el-form-item>
 <!--      <el-form-item label="业务单据" prop="soId">-->
@@ -248,13 +246,19 @@
         </template>
       </el-table-column>
       <el-table-column label="支付证明" align="center" prop="payProof" width="auto"/>
-      <el-table-column label="实际账户" align="center" prop="account" />
+      <el-table-column label="实际账户" align="center" prop="accountName" />
       <el-table-column label="收款金额" align="center" prop="receive" />
       <el-table-column label="备注" align="center" prop="remark" min-width="140"/>
-      <el-table-column label="分销商" align="center" prop="customer" />
+      <el-table-column label="分销商" align="center" prop="customerName" >
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewDetail(scope.row.customer)">
+            {{ scope.row.customerName}}
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="业务单据" align="center" prop="soId" />
       <el-table-column label="提交人" align="center" prop="submiter" />
-      <el-table-column label="打款账户" align="center" prop="payoutAccountId" />
+<!--      <el-table-column label="打款账户" align="center" prop="payoutAccountId" />-->
 <!--      <el-table-column label="客户等级" align="center" prop="level" >-->
 <!--        <template #default="scope">-->
 <!--          <dict-tag :type="DICT_TYPE.FX_CUSTOMER_LEVEL" :value="scope.row.level" />-->
@@ -322,6 +326,12 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <AccountCollectionForm ref="formRef" @success="getList" />
+  <ConsigneeTable ref="consigneeRef" @click-row="handleClickConsigneeRow" />
+  <CustomerDetailForm
+    ref="detailRef"
+    v-model:visible="detailVisible"
+    :customer="currentCustomer"
+  />
 </template>
 
 <script setup lang="ts">
@@ -330,6 +340,10 @@ import {dateFormatter, dateFormatter2} from '@/utils/formatTime'
 import download from '@/utils/download'
 import { AccountCollectionApi, AccountCollectionVO } from '@/api/fx/accountcollection'
 import AccountCollectionForm from './AccountCollectionForm.vue'
+import CustomerDetailForm from "@/views/fx/customerinfo/CustomerDetailForm.vue";
+import ConsigneeSelect from "@/components/Consignee/ConsigneeSelect.vue";
+import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue";
+import {CustomerInfoVO} from "@/api/fx/customerinfo";
 
 /** 分销账户收款记录 列表 */
 defineOptions({ name: 'AccountCollection' })
@@ -348,9 +362,11 @@ const queryParams = reactive({
   payType: undefined,
   payProof: undefined,
   account: undefined,
+  accountName: undefined,
   receive: undefined,
   remark: undefined,
   customer: undefined,
+  customerName: undefined,
   soId: undefined,
   submiter: undefined,
   payoutAccountId: undefined,
@@ -422,9 +438,48 @@ const handleExport = async () => {
     exportLoading.value = false
   }
 }
+// 添加响应式变量
+const detailVisible = ref(false)
+const currentCustomer = ref('')
+const detailRef = ref()
+
+// 添加查看详情方法
+const handleViewDetail = (customer: string) => {
+  currentCustomer.value = customer
+  detailVisible.value = true
+  // 如果需要主动加载数据，可以调用：
+  detailRef.value.openById(customer)
+}
+
+/**
+ * 分销商表格
+ */
+const consigneeRef = ref() //收货方表格引用
+const consigneeList = ref<CustomerInfoVO[]>() //收货方数据
+const consigneeSelectRef = ref()
+
+const handleChange = (row) => {
+  queryParams.customer = row.id
+}
+/**
+ 选择分销商表格数据并回显到表单中
+ */
+const handleClickConsigneeRow = (data: CustomerInfoVO) => {
+  //@ts-ignore
+  queryParams.customer = data.id
+}
 
 /** 初始化 **/
 onMounted(() => {
   getList()
+  nextTick(() => {
+    if (consigneeSelectRef.value) {
+      const select = consigneeSelectRef.value.selectRef?.suffixRef
+      select.onclick = (event: Event) => {
+        event.stopPropagation()
+        consigneeRef.value.open()
+      }
+    }
+  })
 })
 </script>

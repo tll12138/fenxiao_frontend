@@ -8,9 +8,11 @@ export interface AccountCollectionVO {
   payType: string // 支付方式
   payProof: string // 支付证明
   account: string // 实际账户
+  accountName: string // 实际账户名称
   receive: number // 收款金额
   remark: string // 备注
   customer: string // 分销商
+  customerName: string // 分销商
   soId: string // 业务单据
   submiter: string // 提交人
   payoutAccountId: string // 打款账户
@@ -53,4 +55,4 @@ export const AccountCollectionApi = {
   exportAccountCollection: async (params) => {
     return await request.download({ url: `/fx/account-collection/export-excel`, params })
   },
-}
+}

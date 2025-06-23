@@ -5,6 +5,7 @@ export interface PayAccountVO {
   id: number // 序号
   payType: number // 类型
   customerId: string // 分销商账户
+  customerName: string // 分销商账户
   accountNo: string // 付款账户
   description: string // 说明
   isActive: string // 是否可用
@@ -41,4 +42,4 @@ export const PayAccountApi = {
   exportPayAccount: async (params) => {
     return await request.download({ url: `/fx/pay-account/export-excel`, params })
   },
-}
+}
