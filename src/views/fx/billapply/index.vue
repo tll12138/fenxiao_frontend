@@ -276,16 +276,14 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <router-link to="/fx/billapply/create">
-          <el-button
-            class="ml-3"
-            type="primary"
-            plain
-          >
-            <Icon icon="ep:plus" class="mr-5px"/>
-            新增审批
-          </el-button>
-        </router-link>
+        <el-button
+          type="primary"
+          plain
+          @click="openForm('create')"
+          v-hasPermi="['fx:bill-apply:create']"
+        >
+          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        </el-button>
         <el-button
           type="success"
           plain

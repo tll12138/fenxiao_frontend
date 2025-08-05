@@ -33,7 +33,7 @@ const selectRef = ref()
 
 // 获取收货方列表
 const loadConsigneeList = async () => {
-  const res = await CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 100 })
+  const res = await CustomerInfoApi.getCustomerInfoPage({ pageNo: 1, pageSize: 10000 })
   consigneeList.value = res.list
 }
 

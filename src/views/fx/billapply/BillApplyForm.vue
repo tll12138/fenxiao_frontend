@@ -7,16 +7,16 @@
       label-width="100px"
       v-loading="formLoading"
     >
-<!--      <el-form-item label="申请人" prop="applyMan">-->
-<!--        <el-select v-model="formData.applyMan" placeholder="请选择申请人">-->
-<!--          <el-option-->
-<!--            v-for="dict in getDictOptions(DICT_TYPE.$dictType.toUpperCase())"-->
-<!--            :key="dict.value"-->
-<!--            :label="dict.label"-->
-<!--            :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
+      <el-form-item label="申请人" prop="applyMan">
+        <el-select v-model="formData.applyMan" multiple placeholder="请选择申请人" :disabled="true">
+          <el-option
+            v-for="item in userOptions"
+            :key="item.id"
+            :label="item.nickname"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="申请日期" prop="applyDate">
         <el-date-picker
           v-model="formData.applyDate"
@@ -66,9 +66,9 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="金额合计(大写)" prop="totalAmount">
-        <el-input v-model="formData.totalAmount" placeholder="请输入金额合计(大写)" />
-      </el-form-item>
+<!--      <el-form-item label="金额合计(大写)" prop="totalAmount">-->
+<!--        <el-input v-model="formData.totalAmount" placeholder="请输入金额合计(大写)" />-->
+<!--      </el-form-item>-->
 <!--      <el-form-item label="销售单" prop="saleOrder">-->
 <!--        <el-checkbox-group v-model="formData.saleOrder">-->
 <!--          <el-checkbox-->
@@ -180,6 +180,10 @@
 import {getStrDictOptions, DICT_TYPE, getDictOptions} from '@/utils/dict'
 import { BillApplyApi, BillApplyVO } from '@/api/fx/billapply'
 import BillApplyDetailForm from './components/BillApplyDetailForm.vue'
+import {onMounted} from "vue";
+import * as UserApi from "@/api/system/user";
+import {EmailAddressApi, EmailAddressVO} from "@/api/fx/emailaddress";
+import {useUserStore} from "@/store/modules/user";
 
 /** 发票申请 表单 */
 defineOptions({ name: 'BillApplyForm' })
@@ -222,6 +226,8 @@ const formRules = reactive({
   isOver: [{ required: true, message: '是否完成不能为空', trigger: 'change' }],
 })
 const formRef = ref() // 表单 Ref
+/** 初始化 */
+const userOptions = ref<UserApi.UserVO[]>([]) // 用户列表
 
 /** 子表的表单 */
 const subTabsName = ref('billApplyDetail')
@@ -309,4 +315,43 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
 }
+const userId = useUserStore().getUser.id // 当前登录的编号
+const initialApplyMan = [userId];
+const init = () =>{
+  // 获取收货方列表
+  getEmailList()
+  formData.value.applyMan = initialApplyMan
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  formData.value.applyDate = `${year}-${month}-${day}`;
+}
+
+/**
+ * 邮箱列表
+ */
+const emailList = ref<EmailAddressVO[]>()
+const emailMap = ref<Map<number, EmailAddressVO>>(new Map<number, EmailAddressVO>())
+const emailTotal = ref<number>()
+/**
+ * 获取邮箱列表
+ */
+const getEmailList = async () => {
+  EmailAddressApi.getEmailAddressPage({ pageNo: 1, pageSize: 100, customerId: formData.value.cusName||'0'}).then((res) => {
+    emailList.value = res.list
+    emailMap.value = res.list.reduce((map, item) => {
+      map[item.id] = item;
+      return map;
+    }, new Map());
+    emailTotal.value = res.total
+  })
+}
+
+onMounted(async() => {
+  // 获得用户列表
+  userOptions.value = await UserApi.getSimpleUserList()
+  // 执行初始化过程
+  init()
+})
 </script>

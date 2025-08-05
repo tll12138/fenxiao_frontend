@@ -194,6 +194,12 @@
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
+        <router-link to="/fx/customeraccount/create">
+          <el-button class="ml-3" type="danger" plain>
+            <Icon icon="ep:plus" class="mr-5px" />
+            发起收款审核
+          </el-button>
+        </router-link>
       </el-form-item>
     </el-form>
   </ContentWrap>

@@ -51,4 +51,10 @@ export const CustomerAccountApi = {
   exportCustomerAccount: async (params) => {
     return await request.download({ url: `/fx/customer-account/export-excel`, params })
   },
+
+  // 根据分销商和业务主体查询分销商账号
+  getCustomerAccountByCusAndEntity: async (customerId: number,
+                             entityId: number) => {
+    return await request.get({ url: `/fx/customer-account/getByCusAndEntity?customerId=` + customerId + '&entityId=' + entityId })
+  },
 }

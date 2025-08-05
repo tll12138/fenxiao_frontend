@@ -211,12 +211,6 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <router-link to="/fx/accountcollection/create">
-          <el-button class="ml-3" type="primary" plain v-hasPermi="['fx:account-collection:create']">
-            <Icon icon="ep:plus" class="mr-5px" />
-            新增收款单
-          </el-button>
-        </router-link>
         <el-button
           type="success"
           plain

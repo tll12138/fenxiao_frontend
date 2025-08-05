@@ -45,15 +45,15 @@
                 />
               </el-form-item>
             </ElCol>
-            <ElCol :span="7">
-              <el-form-item label="客户名称" prop="cusName">
-                <el-select ref="selectCustomerRef" class="search-select" :suffix-icon="ConsigneeIcon as any"
-                           v-model="distributorName" @change="handleConsigneeChange" placeholder="请选择客户" filterable clearable>
-                  <el-option v-for="dict in consigneeList" :key="dict.id" :label="dict.distributorName"
-                             :value="dict.id" />
-                </el-select>
-              </el-form-item>
-            </ElCol>
+<!--            <ElCol :span="7">-->
+<!--              <el-form-item label="客户名称" prop="cusName">-->
+<!--                <el-select ref="selectCustomerRef" class="search-select" :suffix-icon="ConsigneeIcon as any"-->
+<!--                           v-model="distributorName" @change="handleConsigneeChange" placeholder="请选择客户" filterable clearable>-->
+<!--                  <el-option v-for="dict in consigneeList" :key="dict.id" :label="dict.distributorName"-->
+<!--                             :value="dict.id" />-->
+<!--                </el-select>-->
+<!--              </el-form-item>-->
+<!--            </ElCol>-->
             <ElCol :span="7">
               <el-form-item label="发票类型" prop="billType">
                 <el-select
@@ -72,38 +72,43 @@
               </el-form-item>
             </ElCol>
 
-            <ElCol :span="7">
-              <el-form-item label="销售单" prop="saleOrder">
-                <el-select ref="selectSaleOrderRef" class="search-select" :suffix-icon="ConsigneeIcon as any"
-                           v-model="saleOrderId" @change="handleSaleChange" placeholder="请选择销售单" filterable clearable>
-                  <el-option v-for="dict in ordersInfoList" :key="dict.id" :label="dict.orderId"
-                             :value="dict.id" />
-                </el-select>
-              </el-form-item>
-            </ElCol>
-            <ElCol :span="7">
-              <el-form-item label="发票抬头" prop="billHead">
-                <el-select v-model="formData.billHead" placeholder="请选择发票抬头" clearable filterable>
-                  <el-option v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)" :key="dict.value"
-                             :label="dict.label" :value="dict.value" />
-                </el-select>
-              </el-form-item>
-            </ElCol>
-            <ElCol :span="7">
-              <el-form-item label="开票财务" prop="maker">
-                <el-select v-model="formData.maker" multiple placeholder="请选择开票财务" >
-                  <el-option
-                    v-for="item in userOptions"
-                    :key="item.id"
-                    :label="item.nickname"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </ElCol>
-            <ElCol :span="14">
-              <el-form-item label="发票邮箱（自动发送）" prop="email" label-width="200px">
+<!--            <ElCol :span="7">-->
+<!--              <el-form-item label="销售单" prop="saleOrder">-->
+<!--                <el-select ref="selectSaleOrderRef" class="search-select" :suffix-icon="ConsigneeIcon as any"-->
+<!--                           v-model="saleOrderId" @change="handleSaleChange" placeholder="请选择销售单" filterable clearable>-->
+<!--                  <el-option v-for="dict in ordersInfoList" :key="dict.id" :label="dict.orderId"-->
+<!--                             :value="dict.id" />-->
+<!--                </el-select>-->
+<!--              </el-form-item>-->
+<!--            </ElCol>-->
+<!--            <ElCol :span="7">-->
+<!--              <el-form-item label="发票抬头" prop="billHead">-->
+<!--                <el-select v-model="formData.billHead" placeholder="请选择发票抬头" clearable filterable>-->
+<!--                  <el-option v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)" :key="dict.value"-->
+<!--                             :label="dict.label" :value="dict.value" />-->
+<!--                </el-select>-->
+<!--              </el-form-item>-->
+<!--            </ElCol>-->
+<!--            <ElCol :span="7">-->
+<!--              <el-form-item label="开票财务" prop="maker">-->
+<!--                <el-select v-model="formData.maker" multiple placeholder="请选择开票财务" >-->
+<!--                  <el-option-->
+<!--                    v-for="item in userOptions"-->
+<!--                    :key="item.id"-->
+<!--                    :label="item.nickname"-->
+<!--                    :value="item.id"-->
+<!--                  />-->
+<!--                </el-select>-->
+<!--              </el-form-item>-->
+<!--            </ElCol>-->
+            <ElCol :span="10">
+              <el-form-item label="发票邮箱" prop="email" label-width="100px">
                 <el-input v-model="formData.email" placeholder="请输入发票邮箱" />
+              </el-form-item>
+            </ElCol>
+            <ElCol :span="10">
+              <el-form-item label="销售单据" prop="soIds" label-width="100px">
+                <el-input v-model="formData.soIds" placeholder="请输入要开票对应的销售单据" />
               </el-form-item>
             </ElCol>
             <ElCol :span="21">
@@ -150,21 +155,21 @@
                 <el-input v-model="formData.address" placeholder="请输入地址及电话" class="auto-width-form-item"/>
               </el-form-item>
             </ElCol>
-            <ElCol :span="7">
-              <el-form-item label="金额合计" prop="amount">
-                {{ billApplyDetailFormRef?.totalAmount || 0 }}
+            <ElCol :span="21">
+              <el-form-item label="金额合计" prop="amount" label-width="120px">
+                <el-input v-model="formData.address" placeholder="请输入开票金额" class="auto-width-form-item"/>
               </el-form-item>
             </ElCol>
-            <ElCol :span="7" :offset="7" >
-              <el-form-item label="金额合计(大写)" prop="totalAmount" label-width="120px">
-                {{ billApplyDetailFormRef?.totalAmount || 0 }}
-              </el-form-item>
-            </ElCol>
+<!--            <ElCol :span="7" :offset="7" >-->
+<!--              <el-form-item label="金额合计(大写)" prop="totalAmount" label-width="120px">-->
+<!--                {{ billApplyDetailFormRef?.totalAmount || 0 }}-->
+<!--              </el-form-item>-->
+<!--            </ElCol>-->
           </ElRow>
 
-          <BillApplyDetailForm
-            ref="billApplyDetailFormRef"
-          />
+<!--          <BillApplyDetailForm-->
+<!--            ref="billApplyDetailFormRef"-->
+<!--          />-->
 
         </el-form>
       </ContentWrap>
@@ -263,6 +268,7 @@ const formRules = reactive({
   taxNo: [{ required: true, message: '纳税人识别号不能为空', trigger: 'blur' }],
   email: [{ required: true, message: '发票邮箱不能为空', trigger: 'blur' }],
   address: [{ required: true, message: '地址及电话不能为空', trigger: 'blur' }],
+  amount: [{ required: true, message: '开票金额不能为空', trigger: 'blur' }],
 })
 const formData = ref<BillApplyVO>({
   id: undefined,
@@ -413,11 +419,6 @@ const submitForm = async (type: string) => {
   try {
     await billApplyDetailFormRef.value.validate()
   } catch (e) {
-    return
-  }
-  const detailList = billApplyDetailFormRef.value.getData()
-  if (detailList.length === 0) {
-    message.warning('请添加商品明细')
     return
   }
 
