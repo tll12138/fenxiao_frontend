@@ -15,7 +15,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="申请人" prop="applyMan">
-              <el-select v-model="formData.applyMan" multiple placeholder="请选择申请人" :disabled="true">
+              <el-select v-model="formData.applyMan" multiple placeholder="请选择申请人" :disabled="true" @change="handleApplyManChange">
                 <el-option
                   v-for="item in userOptions"
                   :key="item.id"
@@ -32,29 +32,18 @@
                 type="date"
                 value-format="x"
                 placeholder="选择申请日期"
+                :disabled = "true"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="开票日期" prop="billDate">
+            <el-form-item label="开票日期" prop="billDate" v-if="formType !== 'create'" >
               <el-date-picker
                 v-model="formData.billDate"
                 type="date"
                 value-format="x"
                 placeholder="选择开票日期"
               />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="发票类型" prop="billType">
-              <el-select v-model="formData.billType" placeholder="请选择发票类型">
-                <el-option
-                  v-for="dict in getIntDictOptions(DICT_TYPE.FX_BILL_TYPE)"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -77,17 +66,24 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="发票类型" prop="billType">
+              <el-select v-model="formData.billType" placeholder="请选择发票类型">
+                <el-option
+                  v-for="dict in getIntDictOptions(DICT_TYPE.FX_BILL_TYPE)"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="金额合计" prop="amount">
               <el-input v-model="formData.amount" placeholder="请输入金额合计" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="金额合计(大写)" prop="totalAmount">
-              <el-input v-model="formData.totalAmount" placeholder="请输入金额合计(大写)" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="开票流程" prop="rid">
+            <el-form-item label="开票流程" prop="rid" v-if="formType !== 'create'">
               <el-input v-model="formData.rid" placeholder="请输入开票流程" />
             </el-form-item>
           </el-col>
@@ -118,79 +114,29 @@
               <el-input v-model="formData.bankNo" placeholder="请输入开户行及账号" />
             </el-form-item>
           </el-col>
-        </el-row>
-      </div>
-
-      <!-- 表单分组：其他信息 -->
-      <div class="form-section">
-        <h3 class="section-title">其他信息</h3>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="是否完成" prop="isOver">
-              <el-select v-model="formData.isOver" placeholder="请选择是否完成">
-                <el-option
-                  v-for="dict in getIntDictOptions(DICT_TYPE.YES_NO)"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否芽肌" prop="isYj">
-              <el-select v-model="formData.isYj" placeholder="请选择是否芽肌">
-                <el-option
-                  v-for="dict in getIntDictOptions(DICT_TYPE.YES_NO)"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="发票邮箱" prop="email">
               <el-input v-model="formData.email" placeholder="请输入发票邮箱" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="发票发送状态" prop="isSend">
-              <el-select v-model="formData.isSend" placeholder="请选择发送状态">
-                <el-option label="未发送" value="0" />
-                <el-option label="已发送" value="1" />
-              </el-select>
+          <el-col :span="24">
+            <el-form-item label="证明附件" prop="document">
+              <!-- 限制最大5MB -->
+              <UploadImg
+                v-model="formData.document"
+                :file-size="5"
+              :file-type="['image/jpeg', 'image/png', 'image/pdf']"
+              width="200px"
+              height="200px"
+              :show-delete="true"
+              placeholder="请上传发票图片或PDF"
+              />
+              <div class="form-hint">支持JPG、PNG、PDF格式，最大5MB</div>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
               <el-input v-model="formData.remark" placeholder="请输入备注" type="textarea" rows="3" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="财务说明" prop="financialStatement">
-              <el-input
-                v-model="formData.financialStatement"
-                placeholder="请输入财务说明"
-                type="textarea"
-                rows="3"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="发票附件" prop="document">
-              <el-upload
-                class="upload-demo"
-                action="/api/file/upload"
-                :on-success="handleFileSuccess"
-                :file-list="fileList"
-                list-type="text"
-              >
-                <el-button type="primary">点击上传</el-button>
-                <template #tip>
-                  <div class="el-upload__tip">支持上传pdf、jpg、png格式文件，单个文件不超过10MB</div>
-                </template>
-              </el-upload>
             </el-form-item>
           </el-col>
         </el-row>
@@ -207,33 +153,24 @@
 </template>
 
 <script setup lang="ts">
-import {DICT_TYPE, getDictOptions, getIntDictOptions, getStrDictOptions} from '@/utils/dict'
+import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from '@/utils/dict'
+// 导入UploadImg组件
+import { UploadImg } from '@/components/UploadFile';
 import { BillApplyApi, BillApplyVO } from '@/api/fx/billapply'
-import BillApplyDetailForm from './components/BillApplyDetailForm.vue'
 import * as UserApi from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
 
-/** 发票申请 表单组件定义 */
 defineOptions({ name: 'BillApplyForm' })
 
-/** 国际化 hook */
 const { t } = useI18n()
-/** 消息弹窗 hook */
 const message = useMessage()
 
-/** 控制弹窗显示/隐藏 */
 const dialogVisible = ref(false)
-/** 弹窗标题 */
 const dialogTitle = ref('')
-/** 表单加载状态（数据加载/提交时） */
 const formLoading = ref(false)
-/** 表单类型：create-新增；update-修改 */
 const formType = ref('')
-/** 上传文件列表 */
 const fileList = ref([])
-/** 用户选项列表 */
 const userOptions = ref([])
-/** 当前登录用户信息 */
 const userId = useUserStore().getUser.id
 const initialApplyMan = [userId]
 
@@ -271,7 +208,8 @@ const formRules = reactive({
   applyMan: [{ required: true, message: '申请人不能为空', trigger: 'blur' }],
   isOver: [{ required: true, message: '是否完成不能为空', trigger: 'change' }],
   applyDate: [{ required: true, message: '申请日期不能为空', trigger: 'change' }],
-  billType: [{ required: true, message: '发票类型不能为空', trigger: 'change' }]
+  billType: [{ required: true, message: '发票类型不能为空', trigger: 'change' }],
+  document: [{ required: true, message: '证明附件不能为空', trigger: 'change' }]
 })
 
 /** 表单引用 */
@@ -311,6 +249,21 @@ const handleFileSuccess = (response, file, fileList) => {
   }
 }
 
+const handleApplyManChange = (selectedIds) => {
+  // 如果是单选场景取第一个选中的ID
+  const firstId = Array.isArray(selectedIds) ? selectedIds[0] : selectedIds;
+  if (!firstId) {
+    formData.value.purchaserName = '';
+    return;
+  }
+
+  // 从用户选项中找到对应的nickname
+  const selectedUser = userOptions.value.find(item => item.id === firstId);
+  if (selectedUser) {
+    formData.value.purchaserName = selectedUser.nickname;
+  }
+};
+
 /**
  * 打开表单弹窗
  * @param type 表单类型（create/update）
@@ -324,6 +277,12 @@ const open = async (type: string, id?: number) => {
 
   if (type === 'create') {
     formData.value.applyMan = [userId] // 新建时默认数组
+    // 新增时同步设置购方名称
+    const defaultUser = userOptions.value.find(item => item.id === userId);
+    if (defaultUser) {
+      formData.value.purchaserName = defaultUser.nickname;
+    }
+    formData.value.applyDate = Date.now() // 新建时默认当前时间
     console.log('默认绑定的审核人数据：', formData.value.applyMan) // 确认前端绑定正确
   }
 
@@ -356,21 +315,13 @@ const emit = defineEmits(['success'])
 
 /** 提交表单 */
 const submitForm = async () => {
+  console.log("开始提交", formData.value)
   // 校验主表单
   await formRef.value.validate()
-  // 校验子表单
-  try {
-    await billApplyDetailFormRef.value.validate()
-  } catch (e) {
-    subTabsName.value = 'billApplyDetail'
-    return
-  }
   // 提交请求
   formLoading.value = true
   try {
     const data = formData.value as unknown as BillApplyVO
-    // 拼接子表数据
-    data.billApplyDetails = billApplyDetailFormRef.value.getData()
     if (formType.value === 'create') {
       await BillApplyApi.createBillApply(data)
       message.success(t('common.createSuccess'))

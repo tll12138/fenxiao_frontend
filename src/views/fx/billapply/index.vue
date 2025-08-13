@@ -6,7 +6,7 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
+      label-width="100px"
     >
       <el-form-item label="申请日期" prop="applyDate">
         <el-date-picker
@@ -112,39 +112,24 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="申请人" align="center" prop="applyMan" />
-      <el-table-column label="申请日期" align="center" prop="applyDate" />
-      <el-table-column label="开票日期" align="center" prop="billDate" />
-      <el-table-column label="地址及电话" align="center" prop="address" />
-      <el-table-column label="开户行及账号" align="center" prop="bankNo" />
-      <el-table-column label="金额合计" align="center" prop="amount" />
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="发票类型" align="center" prop="billType">
+      <el-table-column label="申请日期" align="center" prop="applyDate" min-width="120" />
+      <el-table-column label="开票日期" align="center" prop="billDate" min-width="120"/>
+      <el-table-column label="地址及电话" align="center" prop="address" min-width="180" />
+      <el-table-column label="开户行及账号" align="center" prop="bankNo" min-width="200" />
+      <el-table-column label="金额合计" align="center" prop="amount" min-width="80"/>
+      <el-table-column label="发票类型" align="center" prop="billType" min-width="155">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.FX_BILL_TYPE" :value="scope.row.billType" />
         </template>
       </el-table-column>
-      <el-table-column label="销售单" align="center" prop="saleOrder" />
-      <el-table-column label="发票抬头" align="center" prop="billHead">
+      <el-table-column label="发票抬头" align="center" prop="billHead" min-width="120">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.billHead" />
         </template>
       </el-table-column>
-      <el-table-column label="纳税人识别号" align="center" prop="taxNo" />
-<!--      <el-table-column label="是否完成" align="center" prop="isOver">-->
-<!--        <template #default="scope">-->
-<!--          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isOver" />-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="是否芽肌" align="center" prop="isYj">-->
-<!--        <template #default="scope">-->
-<!--          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isYj" />-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="发票邮箱" align="center" prop="email" />-->
-<!--      <el-table-column label="关联邮箱" align="center" prop="emailId" />-->
-<!--      <el-table-column label="发票发送状态" align="center" prop="isSend" />-->
-      <el-table-column label="操作" align="center">
+      <el-table-column label="发票邮箱" align="center" prop="email" min-width="180" />
+      <el-table-column label="备注" align="center" prop="remark" min-width="150" />
+      <el-table-column label="操作" align="center" min-width="120">
         <template #default="scope">
           <el-button
             link
