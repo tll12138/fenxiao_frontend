@@ -129,9 +129,19 @@
       </el-table-column>
       <el-table-column label="发票邮箱" align="center" prop="email" min-width="180" />
       <el-table-column label="备注" align="center" prop="remark" min-width="150" />
-      <el-table-column label="操作" align="center" min-width="120">
+      <el-table-column label="操作" align="center" min-width="150">
         <template #default="scope">
           <el-button
+            v-if="scope.row.applyDate === null"
+            link
+            type="success"
+            @click="handlePush(scope.row.id)"
+            v-hasPermi="['fx:bill-apply:update']"
+          >
+            提交
+          </el-button>
+          <el-button
+            v-if="scope.row.applyDate === null"
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
@@ -140,6 +150,16 @@
             编辑
           </el-button>
           <el-button
+            v-if="scope.row.applyDate !== null"
+            link
+            type="primary"
+            @click="openForm('detail', scope.row.id)"
+            v-hasPermi="['fx:bill-apply:update']"
+          >
+            查看详情
+          </el-button>
+          <el-button
+            v-if="scope.row.applyDate === null"
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
@@ -247,6 +267,19 @@ const handleDelete = async (id: number) => {
     // 发起删除
     await BillApplyApi.deleteBillApply(id)
     message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+/** 提交按钮操作 */
+const handlePush = async (id: number) => {
+  try {
+    // 提交的二次确认
+    await message.confirm('确定提交吗？')
+    // 发起提交
+    await BillApplyApi.pushBillApply(id)
+    message.success(t('common.ok'))
     // 刷新列表
     await getList()
   } catch {}

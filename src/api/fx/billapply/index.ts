@@ -61,6 +61,11 @@ export const BillApplyApi = {
     return await request.delete({ url: `/fx/bill-apply/delete?id=` + id })
   },
 
+  // 提交发票申请
+  pushBillApply: async (id: number) => {
+    return await request.post({ url: `/fx/bill-apply/push?id=` + id })
+  },
+
   // 导出发票申请 Excel
   exportBillApply: async (params) => {
     return await request.download({ url: `/fx/bill-apply/export-excel`, params })
