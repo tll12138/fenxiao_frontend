@@ -15,7 +15,13 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="申请人" prop="applyMan">
-              <el-select v-model="formData.applyMan" multiple placeholder="请选择申请人" :disabled="true" @change="handleApplyManChange">
+              <el-select
+                v-model="formData.applyMan"
+                multiple
+                placeholder="请选择申请人"
+                :disabled="true"
+                @change="handleApplyManChange"
+              >
                 <el-option
                   v-for="item in userOptions"
                   :key="item.id"
@@ -26,18 +32,40 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="销售单" prop="saleOrder">
+              <div class="multi-select-container">
+                <el-button type="primary" @click="openSaleTable" :disabled="isDetail"
+                  >选择</el-button
+                >
+
+                <!-- 显示已选择的销售单 -->
+                <div class="tags-container">
+                  <el-tag
+                    v-for="order in formData.saleOrder"
+                    :key="order.id"
+                    closable
+                    @close="removeSaleOrder(order.id)"
+                    class="mr-2 mt-2"
+                  >
+                    {{ order.orderId }}
+                  </el-tag>
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="申请日期" prop="applyDate" v-if="isDetail">
               <el-date-picker
                 v-model="formData.applyDate"
                 type="date"
                 value-format="x"
                 placeholder="选择申请日期"
-                :disabled = "isDetail"
+                :disabled="isDetail"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="开票日期" prop="billDate" v-if="isDetail" >
+            <el-form-item label="开票日期" prop="billDate" v-if="isDetail">
               <el-date-picker
                 v-model="formData.billDate"
                 type="date"
@@ -56,7 +84,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="发票抬头" prop="billHead">
-              <el-select v-model="formData.billHead" placeholder="请选择发票抬头" :disabled="isDetail">
+              <el-select
+                v-model="formData.billHead"
+                placeholder="请选择发票抬头"
+                :disabled="isDetail"
+              >
                 <el-option
                   v-for="dict in getStrDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)"
                   :key="dict.value"
@@ -68,7 +100,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="发票类型" prop="billType">
-              <el-select v-model="formData.billType" placeholder="请选择发票类型" :disabled="isDetail">
+              <el-select
+                v-model="formData.billType"
+                placeholder="请选择发票类型"
+                :disabled="isDetail"
+              >
                 <el-option
                   v-for="dict in getIntDictOptions(DICT_TYPE.FX_BILL_TYPE)"
                   :key="dict.value"
@@ -80,11 +116,20 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="金额合计" prop="amount">
-              <el-input v-model="formData.amount" placeholder="请输入金额合计" :disabled="isDetail" />
+              <el-input
+                v-model="formData.amount"
+                placeholder="请输入金额合计"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="开票流程" prop="rid" v-if="formType !== 'create'">
+            <el-form-item
+              label="开票流程"
+              prop="rid"
+              v-if="formType == 'detail'"
+              :disabled="isDetail"
+            >
               <el-input v-model="formData.rid" placeholder="请输入开票流程" :disabled="isDetail" />
             </el-form-item>
           </el-col>
@@ -97,43 +142,69 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="购方名称" prop="purchaserName">
-              <el-input v-model="formData.purchaserName" placeholder="请输入购方名称" :disabled="isDetail" />
+              <el-input
+                v-model="formData.purchaserName"
+                placeholder="请输入购方名称"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="纳税人识别号" prop="taxNo">
-              <el-input v-model="formData.taxNo" placeholder="请输入纳税人识别号" :disabled="isDetail" />
+              <el-input
+                v-model="formData.taxNo"
+                placeholder="请输入纳税人识别号"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="地址及电话" prop="address">
-              <el-input v-model="formData.address" placeholder="请输入地址及电话" :disabled="isDetail" />
+              <el-input
+                v-model="formData.address"
+                placeholder="请输入地址及电话"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="开户行及账号" prop="bankNo">
-              <el-input v-model="formData.bankNo" placeholder="请输入开户行及账号" :disabled="isDetail" />
+              <el-input
+                v-model="formData.bankNo"
+                placeholder="请输入开户行及账号"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="发票邮箱" prop="email">
-              <el-input v-model="formData.email" placeholder="请输入发票邮箱" :disabled="isDetail" />
+              <el-input
+                v-model="formData.email"
+                placeholder="请输入发票邮箱"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="发票附件" prop="document" :disabled="isDetail">
+            <el-form-item label="发票附件" prop="document" :disabled="isDetail" v-if="isDetail">
               <!-- 限制最大5MB -->
               <UploadFile
                 v-model="formData.document"
-              width="200px"
-              height="200px"
-              :show-delete="true"
+                width="200px"
+                height="200px"
+                :show-delete="true"
               />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="formData.remark" placeholder="请输入备注" type="textarea" rows="3" :disabled="isDetail" />
+              <el-input
+                v-model="formData.remark"
+                placeholder="请输入备注"
+                type="textarea"
+                rows="3"
+                :disabled="isDetail"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -142,21 +213,33 @@
 
     <template #footer>
       <el-button @click="dialogVisible = false" class="cancel-btn">取 消</el-button>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading || isDetail" class="confirm-btn" v-if="!isDetail"
-      >保 存</el-button
+      <el-button
+        @click="submitForm"
+        type="primary"
+        :disabled="formLoading || isDetail"
+        class="confirm-btn"
+        v-if="!isDetail"
+        >保 存</el-button
       >
     </template>
   </Dialog>
+  <SaleTable
+    ref="saleTableRef"
+    :selected-ids="formData.saleOrder.map((item) => item.id)"
+    @confirm="handleSaleSelectConfirm"
+  />
 </template>
 
 <script setup lang="ts">
-import {DICT_TYPE, getIntDictOptions, getStrDictOptions} from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 // 导入UploadImg组件
-import { UploadFile } from '@/components/UploadFile';
+import { UploadFile } from '@/components/UploadFile'
 import { BillApplyApi, BillApplyVO } from '@/api/fx/billapply'
 import * as UserApi from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
-import {formatToDate} from "@/utils/dateUtil";
+import { formatToDate } from '@/utils/dateUtil'
+import SaleTable from '@/views/fx/billapply/components/SaleTable.vue'
+import {OrdersInfoApi, OrdersInfoVO} from '@/api/fx/ordersinfo'
 
 defineOptions({ name: 'BillApplyForm' })
 
@@ -206,7 +289,54 @@ const formRules = reactive({
   applyMan: [{ required: true, message: '申请人不能为空', trigger: 'blur' }],
   isOver: [{ required: true, message: '是否完成不能为空', trigger: 'change' }],
   // applyDate: [{ required: true, message: '申请日期不能为空', trigger: 'change' }],
-  billType: [{ required: true, message: '发票类型不能为空', trigger: 'change' }]
+  billType: [{ required: true, message: '发票类型不能为空', trigger: 'change' }],
+  email: [
+    { required: true, message: '发票邮箱不能为空', trigger: 'blur' },
+    {
+      type: 'email',
+      message: '请输入正确的邮箱格式',
+      trigger: ['blur', 'change']
+    }
+  ],
+  taxNo: [
+    { required: true, message: '纳税人识别号不能为空', trigger: 'blur' },
+    {
+      pattern: /^[A-Z0-9]{15,20}$/,
+      message: '纳税人识别号应为15-20位字母或数字',
+      trigger: 'blur'
+    }
+  ],
+  bankNo: [
+    { required: true, message: '开户行及账号不能为空', trigger: 'blur' },
+    {
+      pattern: /^.{5,100}$/,
+      message: '开户行及账号长度应在5-100之间',
+      trigger: 'blur'
+    }
+  ],
+  address: [
+    { required: true, message: '地址及电话不能为空', trigger: 'blur' },
+    {
+      pattern: /^.{5,200}$/,
+      message: '地址及电话长度应在5-200之间',
+      trigger: 'blur'
+    }
+  ],
+  amount: [
+    { required: true, message: '金额合计不能为空', trigger: 'blur' },
+    {
+      pattern: /^\d+(\.\d{1,2})?$/,
+      message: '请输入正确的金额格式（最多两位小数）',
+      trigger: 'blur'
+    }
+  ],
+  saleOrder: [
+    {
+      required: true,
+      message: '销售单不能为空',
+      trigger: 'change'
+    }
+  ]
   // document: [{ required: true, message: '证明附件不能为空', trigger: 'change' }]
 })
 
@@ -226,9 +356,7 @@ const initUserOptions = async () => {
 // 优先加载用户列表
 initUserOptions()
 /** 初始化获取用户列表 */
-onMounted(async () => {
-
-})
+onMounted(async () => {})
 
 /**
  * 处理文件上传成功
@@ -244,18 +372,38 @@ const handleFileSuccess = (response, file, fileList) => {
 
 const handleApplyManChange = (selectedIds) => {
   // 如果是单选场景取第一个选中的ID
-  const firstId = Array.isArray(selectedIds) ? selectedIds[0] : selectedIds;
+  const firstId = Array.isArray(selectedIds) ? selectedIds[0] : selectedIds
   if (!firstId) {
-    formData.value.purchaserName = '';
-    return;
+    formData.value.purchaserName = ''
+    return
   }
 
   // 从用户选项中找到对应的nickname
-  const selectedUser = userOptions.value.find(item => item.id === firstId);
+  const selectedUser = userOptions.value.find((item) => item.id === firstId)
   if (selectedUser) {
-    formData.value.purchaserName = selectedUser.nickname;
+    formData.value.purchaserName = selectedUser.nickname
   }
-};
+}
+
+// 销售单选择相关
+const saleTableRef = ref<InstanceType<typeof SaleTable>>()
+const saleOrderDisplay = ref('') // 用于显示的文本
+
+// 打开销售单选择表格
+const openSaleTable = () => {
+  saleTableRef.value?.open()
+}
+
+// 处理选择确认
+const handleSaleSelectConfirm = (selected: OrdersInfoVO[]) => {
+  // 合并已选择项，避免重复
+  formData.value.saleOrder = selected;
+}
+
+// 移除已选择的销售单
+const removeSaleOrder = (id: number) => {
+  formData.value.saleOrder = formData.value.saleOrder.filter((item) => item.id !== id)
+}
 
 // 判断是否为详情模式
 const isDetail = computed(() => formType.value === 'detail')
@@ -275,42 +423,59 @@ const open = async (type: string, id?: number) => {
   if (type === 'create') {
     formData.value.applyMan = [userId] // 新建时默认数组
     // 新增时同步设置购方名称
-    const defaultUser = userOptions.value.find(item => item.id === userId);
+    const defaultUser = userOptions.value.find((item) => item.id === userId)
     if (defaultUser) {
-      formData.value.purchaserName = defaultUser.nickname;
+      formData.value.purchaserName = defaultUser.nickname
     }
     // formData.value.applyDate = Date.now() // 新建时默认当前时间
     console.log('默认绑定的审核人数据：', formData.value.applyMan) // 确认前端绑定正确
   }
 
   if (id) {
-    formLoading.value = true;
+    formLoading.value = true
     try {
-      const res = await BillApplyApi.getBillApply(id);
+      const res = await BillApplyApi.getBillApply(id)
 
       // 处理 document 字符串转为数组
-      let documentList: string[] = [];
+      let documentList: string[] = []
       if (res.document) {
         // 1. 去除前后中括号 2. 按逗号分割 3. 去除每个元素的空格
         documentList = res.document
           .replace(/^\[|\]$/g, '') // 移除前后的中括号
           .split(',') // 按逗号分割
-          .map(item => item.trim()) // 去除每个URL的前后空格
-          .filter(item => item); // 过滤空字符串
+          .map((item) => item.trim()) // 去除每个URL的前后空格
+          .filter((item) => item) // 过滤空字符串
+      }
+
+      let saleOrderArr: OrdersInfoVO[] = []
+      if (res.saleOrder) {
+        // 若接口返回的是字符串（如 "1,2,3"），需要转换为数组对象（根据实际接口结构调整）
+        // 这里假设需要将 id 字符串拆分为数组，实际应根据后端返回格式处理
+        if (typeof res.saleOrder === 'string') {
+          const ids = res.saleOrder.split(',').map(Number).filter(Boolean)
+          if (ids.length > 0) {
+            // 调用接口批量查询销售单详情（假设接口支持批量查询）
+            saleOrderArr = await OrdersInfoApi.getOrdersInfoByIds(ids) // 此时 orders 应包含 orderId
+          }
+        } else if (Array.isArray(res.saleOrder)) {
+          // 若后端返回的是数组对象，直接使用
+          saleOrderArr = res.saleOrder
+        }
       }
 
       formData.value = {
         ...res,
         applyMan: Array.isArray(res.applyMan) ? res.applyMan : res.applyMan ? [res.applyMan] : [],
-        document: documentList // 赋值为处理后的数组
-      };
+        document: documentList, // 赋值为处理后的数组
+        saleOrder: saleOrderArr // 确保是数组
+      }
 
       // 初始化文件列表（用于展示已上传的文件）
       if (formData.value.document.length > 0) {
-        fileList.value = formData.value.document.map(url => ({
+        fileList.value = formData.value.document.map((url) => ({
           name: '已上传文件',
           url: url
-        }));
+        }))
       }
     } finally {
       formLoading.value = false
@@ -326,27 +491,27 @@ const emit = defineEmits(['success'])
 
 /** 提交表单 */
 const submitForm = async () => {
-  console.log("开始提交", formData.value)
+  console.log('开始提交', formData.value)
   // 校验主表单
   await formRef.value.validate()
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as BillApplyVO
-    data.applyMan = data.applyMan?.[0] || undefined;
-    data.saleOrder = data.saleOrder?.toString()||'';
-    data.document = data.document?.toString()||'';
+    const data = { ...formData.value } as unknown as BillApplyVO
+    data.applyMan = data.applyMan?.[0] || undefined
+    data.document = data.document?.toString() || ''
     // if (data.applyDate) {
     //   data.applyDate = formatToDate(data.applyDate)
     // }
     if (data.billDate) {
       data.billDate = formatToDate(data.billDate)
     }
-    console.log("提交数据", data)
+    data.saleOrder = formData.value.saleOrder.map((item) => item.id).join(',')
+    console.log('提交数据', data)
     if (formType.value === 'create') {
       await BillApplyApi.createBillApply(data)
       message.success(t('common.createSuccess'))
-    } else if (formType.value === 'update'){
+    } else if (formType.value === 'update') {
       await BillApplyApi.updateBillApply(data)
       message.success(t('common.updateSuccess'))
     }

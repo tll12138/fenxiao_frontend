@@ -3,7 +3,6 @@
     v-model="dialogVisible"
     :title="dialogTitle"
     :loading="formLoading"
-    :is="false"
     width="1100"
   >
     <ContentWrap>
@@ -56,129 +55,174 @@
             </el-form-item>
           </ElCol>
           <ElCol :offset="1" :span="6">
-              <el-form-item>
-                <el-button @click="handleQuery">
-                  <Icon icon="ep:search" class="mr-5px"/>
-                  搜索
-                </el-button>
-                <el-button @click="resetQuery">
-                  <Icon icon="ep:refresh" class="mr-5px"/>
-                  重置
-                </el-button>
+            <el-form-item>
+              <el-button @click="handleQuery">
+                <Icon icon="ep:search" class="mr-5px"/>
+                搜索
+              </el-button>
+              <el-button @click="resetQuery">
+                <Icon icon="ep:refresh" class="mr-5px"/>
+                重置
+              </el-button>
             </el-form-item>
           </ElCol>
         </ElRow>
       </el-form>
     </ContentWrap>
     <ContentWrap>
-    <el-table
-      ref="consigneeRef"
-      class="consignee"
-      :data="ordersInfoList"
-      style="width: 100%"
-      @row-click="setCurrent"
-
-    >
-      <el-table-column property="orderId" label="单据编号" />
-      <el-table-column property="orderDate" label="单据日期" />
-      <el-table-column property="supplierId" label="销售商" >
-        <template #default="scope">
-          <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.supplierId" />
-        </template>
-      </el-table-column>
-      <el-table-column property="receiveSupplierId" label="收货经销商" align="center" width="220">
-        <template #default="scope">
-          <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.receiveSupplierId" />
-        </template>
-      </el-table-column>
-      <el-table-column property="distributorId" label="收货方" />
-      <el-table-column property="salesAmount" label="销售金额" />
-      <el-table-column property="totalGoods" label="发货数量" />
-    </el-table>
-    <Pagination
-      :total="total"
-      v-model:page="queryParams.pageNo"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+      <el-table
+        ref="tableRef"
+        class="consignee"
+        :data="ordersInfoList"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column property="orderId" label="单据编号" />
+        <el-table-column property="orderDate" label="单据日期" />
+        <el-table-column property="supplierId" label="销售商" >
+          <template #default="scope">
+            <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.supplierId" />
+          </template>
+        </el-table-column>
+        <el-table-column property="receiveSupplierId" label="收货经销商" align="center" width="220">
+          <template #default="scope">
+            <dict-span-tag :type="DICT_TYPE.FX_BUSINESS_ENTITY" :value="scope.row.receiveSupplierId" />
+          </template>
+        </el-table-column>
+<!--        <el-table-column property="distributorId" label="收货方" />-->
+        <el-table-column property="salesAmount" label="销售金额" />
+        <el-table-column property="sendQuantity" label="发货数量" />
+      </el-table>
+      <Pagination
+        :total="total"
+        v-model:page="queryParams.pageNo"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+      />
     </ContentWrap>
+    <template #footer>
+      <el-button @click="dialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="handleConfirm">确定</el-button>
+    </template>
   </Dialog>
-
 </template>
 
 <script lang="ts" setup>
 import { ElTable } from 'element-plus'
 import {DICT_TYPE, getIntDictOptions} from "@/utils/dict";
-import {ref} from "vue";
 import {SubCompanyInfoApi} from "@/api/fx/subcompanyinfo";
 import {OrdersInfoApi, OrdersInfoVO} from "@/api/fx/ordersinfo";
 
 defineOptions({ name: 'SaleTable' })
-const props = defineProps({
-  total:{
-    type: Number,
-    default: 0
-  }
-})
-const total = ref(props.total) // 列表的总页数
+const props = defineProps<{
+  total?: number
+  selectedIds?: number[] // 已选择的ID列表
+}>()
+
+const emit = defineEmits<{
+  (e: 'confirm', selected: OrdersInfoVO[]): void
+}>()
+
+const total = ref(props.total || 0)
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 100,
   orderId: undefined,
   orderDate: undefined,
   receiveSupplierId: undefined,
 })
-const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中
-const ordersInfoList = ref<OrdersInfoVO[]>()
+const dialogVisible = ref(false)
+const dialogTitle = ref('选择销售单')
+const formLoading = ref(false)
+const ordersInfoList = ref<OrdersInfoVO[]>([])
 const companyMap = ref(new Map<number, string>())
+const tableRef = ref<InstanceType<typeof ElTable>>()
+const selectedRows = ref<OrdersInfoVO[]>([])
 
-
+// 打开弹窗并初始化已选数据
 const open = async () => {
   dialogVisible.value = true
-  dialogTitle.value = '选择销售单'
   await getCompanyList()
-  // consigneeList.value = props.list
   await getList()
+  // 回显已选择的数据
+  nextTick(() => {
+    if (props.selectedIds?.length && ordersInfoList.value.length) {
+      ordersInfoList.value.forEach(row => {
+        if (props.selectedIds?.includes(row.id as number)) {
+          tableRef.value?.toggleRowSelection(row, true)
+        }
+      })
+    }
+  })
 }
+// 处理已选行勾选
+const handleSelectedRows = () => {
+  if (!tableRef.value || !props.selectedIds?.length) return;
+
+  // 清空现有选择
+  tableRef.value.clearSelection();
+
+  // 勾选已选择的行
+  ordersInfoList.value.forEach(row => {
+    if (props.selectedIds?.includes(row.id as number)) {
+      tableRef.value?.toggleRowSelection(row, true);
+    }
+  });
+};
+
 const getCompanyList = async () => {
   const subCompanyLis = await SubCompanyInfoApi.getSubCompanyInfoList()
   subCompanyLis.forEach((item) => {
     companyMap.value.set(item.id, item.companyName as string)
   })
 }
+
 const getList = async () => {
-  formLoading.value = true
+  formLoading.value = true;
   try {
-    const data = await OrdersInfoApi.getOrdersInfoPage(queryParams)
-    ordersInfoList.value = data.list
-    total.value = data.total
+    const data = await OrdersInfoApi.getOrdersInfoPage(queryParams);
+    console.log(data);
+    ordersInfoList.value = data.list;
+    total.value = data.total;
+    // 数据加载完成后执行勾选
+    nextTick(handleSelectedRows);
   } finally {
-    formLoading.value = false
+    formLoading.value = false;
   }
-}
+};
+watch(
+  () => props.selectedIds,
+  () => {
+    nextTick(handleSelectedRows);
+  },
+  { deep: true }
+);
 
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
-const queryFormRef = ref()
+
 const resetQuery = () => {
-  queryFormRef.value.resetFields()
+  queryParams.orderId = undefined
+  queryParams.orderDate = undefined
+  queryParams.receiveSupplierId = undefined
   handleQuery()
 }
 
-const consigneeRef = ref<InstanceType<typeof ElTable>>()
-const emit = defineEmits(['click-row']) // 定义 success 事件，用于操作成功后的回调
-const setCurrent = (row: OrdersInfoVO) => {
-  dialogVisible.value = false
-  emit('click-row',row)
+// 处理选择变化
+const handleSelectionChange = (rows: OrdersInfoVO[]) => {
+  selectedRows.value = rows
 }
 
+// 确认选择
+const handleConfirm = () => {
+  emit('confirm', selectedRows.value)
+  dialogVisible.value = false
+}
 
-
-defineExpose({open}) // 提供 open 方法，用于打开弹窗
+defineExpose({ open })
 </script>
 
 <style>
@@ -186,4 +230,3 @@ defineExpose({open}) // 提供 open 方法，用于打开弹窗
   background-color: #d9ecff !important;
 }
 </style>
-
