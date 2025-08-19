@@ -52,6 +52,10 @@ export const OrdersInfoApi = {
   getOrdersInfoPage: async (params: any) => {
     return await request.get({ url: `/fx/orders-info/page`, params })
   },
+  // 根据销售单id查询销售单
+  getOrdersInfoByIds: async (ids: number[]) => {
+    return await request.get({ url: `/fx/orders-info/getByIds?ids=`+ids })
+  },
 
   // 查询销售单详情
   getOrdersInfo: async (id: number) => {
