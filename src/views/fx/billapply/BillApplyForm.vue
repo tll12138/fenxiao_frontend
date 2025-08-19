@@ -210,6 +210,12 @@
         </el-row>
       </div>
     </el-form>
+    <!-- 子表的表单 -->
+    <el-tabs v-model="subTabsName">
+      <el-tab-pane label="销售商品详情" name="billApplyDetail">
+        <BillApplyDetailForm ref="billApplyDetailFormRef" :main-id="formData.id" />
+      </el-tab-pane>
+    </el-tabs>
 
     <template #footer>
       <el-button @click="dialogVisible = false" class="cancel-btn">取 消</el-button>
@@ -240,6 +246,7 @@ import { useUserStore } from '@/store/modules/user'
 import { formatToDate } from '@/utils/dateUtil'
 import SaleTable from '@/views/fx/billapply/components/SaleTable.vue'
 import {OrdersInfoApi, OrdersInfoVO} from '@/api/fx/ordersinfo'
+import BillApplyDetailForm from "@/views/fx/billapply/components/BillApplyDetailForm.vue";
 
 defineOptions({ name: 'BillApplyForm' })
 
@@ -254,6 +261,9 @@ const fileList = ref([])
 const userOptions = ref([])
 const userId = useUserStore().getUser.id
 const initialApplyMan = [userId]
+/** 子表的表单 */
+const subTabsName = ref('billApplyDetail')
+const billApplyDetailFormRef = ref()
 
 /** 表单数据 */
 const formData = ref({
@@ -498,6 +508,8 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     const data = { ...formData.value } as unknown as BillApplyVO
+    // 拼接子表的数据
+    data.billApplyDetails = billApplyDetailFormRef.value.getData()
     data.applyMan = data.applyMan?.[0] || undefined
     data.document = data.document?.toString() || ''
     // if (data.applyDate) {

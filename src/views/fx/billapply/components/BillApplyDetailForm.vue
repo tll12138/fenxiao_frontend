@@ -52,27 +52,6 @@
           </el-form-item>
         </template>
       </el-table-column>
-      <el-table-column label="税率" min-width="100">
-        <template #default="{ row, $index }">
-          <el-form-item :prop="`${$index}.payment`" :rules="formRules.payment" class="mb-0px!">
-            <el-input v-model="row.payment" placeholder="请输入税率" />
-          </el-form-item>
-        </template>
-      </el-table-column>
-      <el-table-column label="税额" min-width="100">
-        <template #default="{ row, $index }">
-          <el-form-item :prop="`${$index}.salTax`" :rules="formRules.salTax" class="mb-0px!">
-            <el-input v-model="row.salTax" placeholder="请输入税额" />
-          </el-form-item>
-        </template>
-      </el-table-column>
-      <el-table-column label="货补数量" min-width="100">
-        <template #default="{ row, $index }">
-          <el-form-item :prop="`${$index}.hbNum`" :rules="formRules.hbNum" class="mb-0px!">
-            <el-input v-model="row.hbNum" placeholder="请输入货补数量" />
-          </el-form-item>
-        </template>
-      </el-table-column>
       <el-table-column label="金额" width="90">
         <template #default="scope">
           {{ ((scope.row.price || 0) * (scope.row.num || 0))?.toFixed(2) || 0 }}
@@ -86,7 +65,7 @@
     </el-table>
   </el-form>
   <el-row justify="center" class="mt-3">
-    <el-button @click="handleAdd" round>添加发票申请详情</el-button>
+    <el-button @click="handleAdd" round>添加销售商品详情</el-button>
   </el-row>
 </template>
 <script setup lang="ts">
