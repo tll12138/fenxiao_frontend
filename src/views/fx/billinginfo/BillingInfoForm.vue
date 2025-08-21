@@ -7,20 +7,14 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="用户编号" prop="customerId">
-        <el-input v-model="formData.customerId" placeholder="请输入用户编号" />
+      <el-form-item label="客商" prop="customerId">
+        <el-input v-model="formData.customerId" placeholder="请输入客商" />
       </el-form-item>
-      <el-form-item label="邮箱地址" prop="email">
-        <el-input v-model="formData.email" placeholder="请输入邮箱地址" />
+      <el-form-item label="购方名称" prop="company">
+        <el-input v-model="formData.company" placeholder="请输入购方名称" />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入备注" />
-      </el-form-item>
-      <el-form-item label="开票抬头" prop="company">
-        <el-input v-model="formData.company" placeholder="请输入开票抬头" />
-      </el-form-item>
-      <el-form-item label="税号" prop="tax">
-        <el-input v-model="formData.tax" placeholder="请输入税号" />
+      <el-form-item label="纳税人识别号" prop="tax">
+        <el-input v-model="formData.tax" placeholder="请输入纳税人识别号" />
       </el-form-item>
       <el-form-item label="开户行及账号" prop="bank">
         <el-input v-model="formData.bank" placeholder="请输入开户行及账号" />
@@ -28,8 +22,8 @@
       <el-form-item label="地址及电话" prop="address">
         <el-input v-model="formData.address" placeholder="请输入地址及电话" />
       </el-form-item>
-      <el-form-item label="是否可用" prop="isActive">
-        <el-select v-model="formData.isActive" placeholder="请选择是否可用">
+      <el-form-item label="是否生效" prop="isActive">
+        <el-select v-model="formData.isActive" placeholder="请选择是否生效">
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.YES_NO)"
             :key="dict.value"
@@ -37,6 +31,12 @@
             :value="dict.value"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input v-model="formData.remark" placeholder="请输入备注" />
+      </el-form-item>
+      <el-form-item label="发送邮箱" prop="email">
+        <el-input v-model="formData.email" placeholder="请输入发送邮箱" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -47,10 +47,10 @@
 </template>
 <script setup lang="ts">
 import { getStrDictOptions, DICT_TYPE } from '@/utils/dict'
-import { EmailAddressApi, EmailAddressVO } from '@/api/fx/emailaddress'
+import { BillingInfoApi, BillingInfoVO } from '@/api/fx/billinginfo'
 
-/** 发票邮箱库 表单 */
-defineOptions({ name: 'EmailAddressForm' })
+/** 开票信息 表单 */
+defineOptions({ name: 'BillingInfoForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -62,15 +62,17 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   customerId: undefined,
-  email: undefined,
-  remark: undefined,
   company: undefined,
   tax: undefined,
   bank: undefined,
   address: undefined,
   isActive: undefined,
+  remark: undefined,
+  email: undefined,
 })
 const formRules = reactive({
+  customerId: [{ required: true, message: '客商不能为空', trigger: 'blur' }],
+  isActive: [{ required: true, message: '是否生效不能为空', trigger: 'change' }],
 })
 const formRef = ref() // 表单 Ref
 
@@ -84,7 +86,7 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await EmailAddressApi.getEmailAddress(id)
+      formData.value = await BillingInfoApi.getBillingInfo(id)
     } finally {
       formLoading.value = false
     }
@@ -100,12 +102,12 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as EmailAddressVO
+    const data = formData.value as unknown as BillingInfoVO
     if (formType.value === 'create') {
-      await EmailAddressApi.createEmailAddress(data)
+      await BillingInfoApi.createBillingInfo(data)
       message.success(t('common.createSuccess'))
     } else {
-      await EmailAddressApi.updateEmailAddress(data)
+      await BillingInfoApi.updateBillingInfo(data)
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
@@ -121,13 +123,13 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     customerId: undefined,
-    email: undefined,
-    remark: undefined,
     company: undefined,
     tax: undefined,
     bank: undefined,
     address: undefined,
     isActive: undefined,
+    remark: undefined,
+    email: undefined,
   }
   formRef.value?.resetFields()
 }

@@ -37,23 +37,6 @@
               />
             </el-form-item>
           </ElCol>
-          <ElCol :offset="1" :span="8">
-            <el-form-item label="收货经销商" prop="receiveSupplierId">
-              <el-select
-                v-model="queryParams.receiveSupplierId"
-                placeholder="请选择收货经销商"
-                clearable
-                class="select-form"
-              >
-                <el-option
-                  v-for="dict in getIntDictOptions(DICT_TYPE.FX_BUSINESS_ENTITY)"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </ElCol>
           <ElCol :offset="1" :span="6">
             <el-form-item>
               <el-button @click="handleQuery">
@@ -118,6 +101,7 @@ defineOptions({ name: 'SaleTable' })
 const props = defineProps<{
   total?: number
   selectedIds?: number[] // 已选择的ID列表
+  customerId?: number
 }>()
 
 const emit = defineEmits<{
@@ -131,6 +115,7 @@ const queryParams = reactive({
   orderId: undefined,
   orderDate: undefined,
   receiveSupplierId: undefined,
+  customerId: undefined
 })
 const dialogVisible = ref(false)
 const dialogTitle = ref('选择销售单')
@@ -181,6 +166,8 @@ const getCompanyList = async () => {
 const getList = async () => {
   formLoading.value = true;
   try {
+    console.log('props.customerId', props.customerId)
+    queryParams.customerId = props.customerId
     const data = await OrdersInfoApi.getOrdersInfoPage(queryParams);
     console.log(data);
     ordersInfoList.value = data.list;
@@ -194,6 +181,7 @@ const getList = async () => {
 watch(
   () => props.selectedIds,
   () => {
+    queryParams.customerId = props.customerId
     nextTick(handleSelectedRows);
   },
   { deep: true }

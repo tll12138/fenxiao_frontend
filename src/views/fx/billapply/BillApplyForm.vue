@@ -40,15 +40,21 @@
 
                 <!-- 显示已选择的销售单 -->
                 <div class="tags-container">
-                  <el-tag
-                    v-for="order in formData.saleOrder"
-                    :key="order.id"
-                    closable
-                    @close="removeSaleOrder(order.id)"
-                    class="mr-2 mt-2"
-                  >
-                    {{ order.orderId }}
-                  </el-tag>
+                  <div class="tags-wrapper" ref="tagsWrapper" @scroll="handleTagsScroll">
+                    <el-tag
+                      v-for="order in visibleOrders"
+                      :key="order.id"
+                      closable
+                      @close="removeSaleOrder(order.id)"
+                      class="mr-2 mt-2"
+                    >
+                      {{ order.orderId }}
+                    </el-tag>
+                  </div>
+                  <!-- 显示滚动提示 -->
+                  <div v-if="formData.saleOrder.length > visibleCount" class="scroll-tip">
+                    已显示 {{ visibleOrders.length }} 条，共 {{ formData.saleOrder.length }} 条
+                  </div>
                 </div>
               </div>
             </el-form-item>
@@ -141,6 +147,22 @@
         <h3 class="section-title">购方信息</h3>
         <el-row :gutter="20">
           <el-col :span="12">
+            <el-form-item label="开票信息" prop="billingInfo">
+              <div class="multi-select-container">
+                <el-button type="primary" @click="openBillingInfoTable" :disabled="isDetail">
+                  选择开票信息
+                </el-button>
+
+                <!-- 显示已选择的开票信息 -->
+                <div v-if="selectedBillingInfo" class="selected-info">
+                  <el-tag closable @close="clearBillingInfo">
+                    {{ selectedBillingInfo.company }}
+                  </el-tag>
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="购方名称" prop="purchaserName">
               <el-input
                 v-model="formData.purchaserName"
@@ -212,8 +234,8 @@
     </el-form>
     <!-- 子表的表单 -->
     <el-tabs v-model="subTabsName">
-      <el-tab-pane label="销售商品详情" name="billApplyDetail">
-        <BillApplyDetailForm ref="billApplyDetailFormRef" :main-id="formData.id" />
+      <el-tab-pane label="销售商品详情" name="billApplyDetail" :lazy="false">
+        <BillApplyDetailForm ref="billApplyDetailFormRef" :main-id="formData.id"  />
       </el-tab-pane>
     </el-tabs>
 
@@ -232,7 +254,12 @@
   <SaleTable
     ref="saleTableRef"
     :selected-ids="formData.saleOrder.map((item) => item.id)"
+    :customer-id="formData.customerId"
     @confirm="handleSaleSelectConfirm"
+  />
+  <BillingInfoTable
+    ref="billingInfoTableRef"
+    @click-row="handleBillingInfoSelect"
   />
 </template>
 
@@ -247,6 +274,8 @@ import { formatToDate } from '@/utils/dateUtil'
 import SaleTable from '@/views/fx/billapply/components/SaleTable.vue'
 import {OrdersInfoApi, OrdersInfoVO} from '@/api/fx/ordersinfo'
 import BillApplyDetailForm from "@/views/fx/billapply/components/BillApplyDetailForm.vue";
+import BillingInfoTable from '@/views/fx/billapply/components/BillingInfoTable.vue';
+import { BillingInfoVO } from "@/api/fx/billinginfo";
 
 defineOptions({ name: 'BillApplyForm' })
 
@@ -291,7 +320,8 @@ const formData = ref({
   isYj: undefined,
   email: undefined,
   emailId: undefined,
-  isSend: undefined
+  isSend: undefined,
+  customerId: undefined
 })
 
 /** 表单校验规则 */
@@ -385,13 +415,16 @@ const handleApplyManChange = (selectedIds) => {
   const firstId = Array.isArray(selectedIds) ? selectedIds[0] : selectedIds
   if (!firstId) {
     formData.value.purchaserName = ''
+    formData.value.customerId = ''
     return
   }
 
   // 从用户选项中找到对应的nickname
   const selectedUser = userOptions.value.find((item) => item.id === firstId)
   if (selectedUser) {
+    console.log('selectedUser', selectedUser)
     formData.value.purchaserName = selectedUser.nickname
+    formData.value.customerId = selectedUser.customerId
   }
 }
 
@@ -399,21 +432,129 @@ const handleApplyManChange = (selectedIds) => {
 const saleTableRef = ref<InstanceType<typeof SaleTable>>()
 const saleOrderDisplay = ref('') // 用于显示的文本
 
+// 控制显示的标签数量
+const visibleCount = ref(20); // 初始显示20个
+const tagsWrapper = ref(null);
+
+// 只显示前N个标签
+const visibleOrders = computed(() => {
+  return formData.value.saleOrder.slice(0, visibleCount.value);
+});
+
+// 滚动时加载更多
+const handleTagsScroll = (e) => {
+  const wrapper = e.target;
+  // 滚动到底部时加载更多（每次加20个）
+  if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 10) {
+    if (visibleCount.value < formData.value.saleOrder.length) {
+      visibleCount.value = Math.min(
+        visibleCount.value + 20,
+        formData.value.saleOrder.length
+      );
+    }
+  }
+};
+
 // 打开销售单选择表格
 const openSaleTable = () => {
-  saleTableRef.value?.open()
+  console.log('formData.value.customerId', formData.value.customerId)
+  saleTableRef.value?.open(formData.value.customerId)
 }
 
 // 处理选择确认
-const handleSaleSelectConfirm = (selected: OrdersInfoVO[]) => {
+const handleSaleSelectConfirm = async (selected: OrdersInfoVO[]) => {
   // 合并已选择项，避免重复
   formData.value.saleOrder = selected;
+  // 获取选中销售单的明细并设置到商品详情
+  if (selected.length > 0) {
+    try {
+      // 假设存在获取销售单明细的API方法
+      const detailList = []
+      for (const order of selected) {
+        const details = await OrdersInfoApi.getOrdersDetailListByOrderId(order.id)
+        // 转换明细格式为BillGoods需要的格式
+        console.log(details)
+        const formattedDetails = details.map(detail => markRaw({
+          id: undefined,
+          mainId: formData.value.id,
+          vareName: detail.skuName,
+          wareSpec: detail.category,
+          wareUnit: detail.unit,         
+          num: Number(detail.count) || 0,
+          price: Number(detail.salePrice) || 0,
+          amount: Number(detail.saleAmount) || 0,
+          saleOrderId: order.id, // 记录当前明细所属的销售单ID
+        }))
+        detailList.push(...formattedDetails)
+      }
+      // 设置明细数据到子组件
+      await billApplyDetailFormRef.value?.setData(detailList)
+      // 等待子组件计算属性更新
+      await nextTick()
+      // 自动计算总金额并赋值到主表单
+      const detailSum = detailList.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      formData.value.amount = Number(detailSum || 0).toFixed(2);
+    } catch (error) {
+      message.error('获取销售单明细失败')
+      console.error(error)
+    }
+  }
 }
 
 // 移除已选择的销售单
 const removeSaleOrder = (id: number) => {
+  console.log('移除销售单前的明细列表：', billApplyDetailFormRef.value?.getData())
+  console.log('移除销售单id：', id)
+  // 1. 从主表单的销售单列表中删除
   formData.value.saleOrder = formData.value.saleOrder.filter((item) => item.id !== id)
+  // 清空明细数据
+  // 2. 从子组件的明细列表中删除该销售单对应的明细
+  if (billApplyDetailFormRef.value) {
+    // 通过 getData() 获取当前明细（而非直接访问 formData）
+    const currentDetails = billApplyDetailFormRef.value.getData() || [];
+    // 过滤掉属于当前销售单的明细（依赖明细中的 saleOrderId）
+    const filteredDetails = currentDetails.filter(detail => detail.saleOrderId !== id);
+
+    // 通过子组件的 setData 方法更新明细
+    billApplyDetailFormRef.value.setData(filteredDetails);
+
+    // 3. 同步更新主表单金额
+    formData.value.amount = Number(billApplyDetailFormRef.value.totalAmount || 0).toFixed(2);
+  }
 }
+
+// 开票信息相关
+const billingInfoTableRef = ref<InstanceType<typeof BillingInfoTable>>();
+const selectedBillingInfo = ref<BillingInfoVO | null>(null);
+
+// 打开开票信息选择表格
+const openBillingInfoTable = () => {
+  billingInfoTableRef.value?.open();
+};
+
+// 处理选择的开票信息
+const handleBillingInfoSelect = (billingInfo: BillingInfoVO) => {
+  if (billingInfo) {
+    selectedBillingInfo.value = billingInfo;
+    // 将选中的开票信息填充到表单中
+    formData.value.billInfo = billingInfo.id;
+    formData.value.purchaserName = billingInfo.company;
+    formData.value.taxNo = billingInfo.tax;
+    formData.value.email = billingInfo.email;
+    formData.value.bankNo = billingInfo.bank;
+    formData.value.address = billingInfo.address;
+  }
+};
+
+// 清除已选择的开票信息
+const clearBillingInfo = () => {
+  selectedBillingInfo.value = null;
+  formData.value.purchaserName = '';
+  formData.value.taxNo = '';
+  formData.value.email = '';
+  formData.value.bankNo = '';
+  formData.value.address = '';
+};
 
 // 判断是否为详情模式
 const isDetail = computed(() => formType.value === 'detail')
@@ -436,6 +577,7 @@ const open = async (type: string, id?: number) => {
     const defaultUser = userOptions.value.find((item) => item.id === userId)
     if (defaultUser) {
       formData.value.purchaserName = defaultUser.nickname
+      formData.value.customerId = defaultUser.customerId
     }
     // formData.value.applyDate = Date.now() // 新建时默认当前时间
     console.log('默认绑定的审核人数据：', formData.value.applyMan) // 确认前端绑定正确
@@ -563,7 +705,8 @@ const resetForm = () => {
     isYj: undefined,
     email: undefined,
     emailId: undefined,
-    isSend: undefined
+    isSend: undefined,
+    customerId: undefined
   }
   fileList.value = []
   formRef.value?.resetFields()
@@ -571,6 +714,17 @@ const resetForm = () => {
 </script>
 
 <style scoped>
+.tags-wrapper {
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 5px;
+}
+.scroll-tip {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  padding: 5px;
+}
 /* 弹窗样式优化 */
 .bill-apply-dialog {
   --el-dialog-width: 900px;
@@ -671,6 +825,16 @@ const resetForm = () => {
 
   .el-col {
     --el-col-span: 24 !important;
+  }
+
+  .selected-info {
+    margin-top: 10px;
+  }
+
+  .multi-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

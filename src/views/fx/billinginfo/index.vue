@@ -8,57 +8,28 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="用户编号" prop="customerId">
+      <el-form-item label="客商" prop="customerId">
         <el-input
           v-model="queryParams.customerId"
-          placeholder="请输入用户编号"
+          placeholder="请输入客商"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="邮箱地址" prop="email">
-        <el-input
-          v-model="queryParams.email"
-          placeholder="请输入邮箱地址"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input
-          v-model="queryParams.remark"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="开票抬头" prop="company">
+      <el-form-item label="购方名称" prop="company">
         <el-input
           v-model="queryParams.company"
-          placeholder="请输入开票抬头"
+          placeholder="请输入购方名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="税号" prop="tax">
+      <el-form-item label="纳税人识别号" prop="tax">
         <el-input
           v-model="queryParams.tax"
-          placeholder="请输入税号"
+          placeholder="请输入纳税人识别号"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -82,10 +53,10 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="是否可用" prop="isActive">
+      <el-form-item label="是否生效" prop="isActive">
         <el-select
           v-model="queryParams.isActive"
-          placeholder="请选择是否可用"
+          placeholder="请选择是否生效"
           clearable
           class="!w-240px"
         >
@@ -97,6 +68,35 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input
+          v-model="queryParams.remark"
+          placeholder="请输入备注"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="发送邮箱" prop="email">
+        <el-input
+          v-model="queryParams.email"
+          placeholder="请输入发送邮箱"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="创建时间" prop="createTime">
+        <el-date-picker
+          v-model="queryParams.createTime"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+          class="!w-240px"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -104,7 +104,7 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['fx:email-address:create']"
+          v-hasPermi="['fx:billing-info:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -113,7 +113,7 @@
           plain
           @click="handleExport"
           :loading="exportLoading"
-          v-hasPermi="['fx:email-address:export']"
+          v-hasPermi="['fx:billing-info:export']"
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
@@ -125,9 +125,18 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="用户编号" align="center" prop="customerId" />
-      <el-table-column label="邮箱地址" align="center" prop="email" />
+      <el-table-column label="客商" align="center" prop="customerId" />
+      <el-table-column label="购方名称" align="center" prop="company" />
+      <el-table-column label="纳税人识别号" align="center" prop="tax" />
+      <el-table-column label="开户行及账号" align="center" prop="bank" />
+      <el-table-column label="地址及电话" align="center" prop="address" />
+      <el-table-column label="是否生效" align="center" prop="isActive">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isActive" />
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="发送邮箱" align="center" prop="email" />
       <el-table-column
         label="创建时间"
         align="center"
@@ -135,22 +144,13 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="开票抬头" align="center" prop="company" />
-      <el-table-column label="税号" align="center" prop="tax" />
-      <el-table-column label="开户行及账号" align="center" prop="bank" />
-      <el-table-column label="地址及电话" align="center" prop="address" />
-      <el-table-column label="是否可用" align="center" prop="isActive">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.YES_NO" :value="scope.row.isActive" />
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
-            v-hasPermi="['fx:email-address:update']"
+            v-hasPermi="['fx:billing-info:update']"
           >
             编辑
           </el-button>
@@ -158,7 +158,7 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['fx:email-address:delete']"
+            v-hasPermi="['fx:billing-info:delete']"
           >
             删除
           </el-button>
@@ -175,37 +175,37 @@
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <EmailAddressForm ref="formRef" @success="getList" />
+  <BillingInfoForm ref="formRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
 import { getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { EmailAddressApi, EmailAddressVO } from '@/api/fx/emailaddress'
-import EmailAddressForm from './EmailAddressForm.vue'
+import { BillingInfoApi, BillingInfoVO } from '@/api/fx/billinginfo'
+import BillingInfoForm from './BillingInfoForm.vue'
 
-/** 发票邮箱库 列表 */
-defineOptions({ name: 'EmailAddress' })
+/** 开票信息 列表 */
+defineOptions({ name: 'BillingInfo' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
 const loading = ref(true) // 列表的加载中
-const list = ref<EmailAddressVO[]>([]) // 列表的数据
+const list = ref<BillingInfoVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   customerId: undefined,
-  email: undefined,
-  remark: undefined,
-  createTime: [],
   company: undefined,
   tax: undefined,
   bank: undefined,
   address: undefined,
   isActive: undefined,
+  remark: undefined,
+  email: undefined,
+  createTime: [],
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -214,7 +214,7 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
-    const data = await EmailAddressApi.getEmailAddressPage(queryParams)
+    const data = await BillingInfoApi.getBillingInfoPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -246,7 +246,7 @@ const handleDelete = async (id: number) => {
     // 删除的二次确认
     await message.delConfirm()
     // 发起删除
-    await EmailAddressApi.deleteEmailAddress(id)
+    await BillingInfoApi.deleteBillingInfo(id)
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
@@ -260,8 +260,8 @@ const handleExport = async () => {
     await message.exportConfirm()
     // 发起导出
     exportLoading.value = true
-    const data = await EmailAddressApi.exportEmailAddress(queryParams)
-    download.excel(data, '发票邮箱库.xls')
+    const data = await BillingInfoApi.exportBillingInfo(queryParams)
+    download.excel(data, '开票信息.xls')
   } catch {
   } finally {
     exportLoading.value = false

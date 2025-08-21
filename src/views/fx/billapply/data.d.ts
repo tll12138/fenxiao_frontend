@@ -10,4 +10,5 @@ export  interface BillGoods {
   returnCount?: number,
   returnPrice?: number,
   returnAmount?: number,
+  saleOrderId?: number
 }

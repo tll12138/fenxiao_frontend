@@ -27,6 +27,7 @@ export interface BillApplyVO {
   email: string // 发票邮箱
   emailId: string // 关联邮箱
   isSend: number // 发票发送状态
+  saleAmount: number // 销售金额
 }
 
 // 发票申请 API
