@@ -24,19 +24,19 @@
               />
             </el-form-item>
           </ElCol>
-          <ElCol :offset="1" :span="8">
-            <el-form-item label="单据时间" prop="orderDate">
-              <el-date-picker
-                v-model="queryParams.orderDate"
-                value-format="YYYY-MM-DD HH:mm:ss"
-                type="daterange"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-                class="!w-240px"
-              />
-            </el-form-item>
-          </ElCol>
+<!--          <ElCol :offset="1" :span="8">-->
+<!--            <el-form-item label="单据时间" prop="orderDate">-->
+<!--              <el-date-picker-->
+<!--                v-model="queryParams.orderDate"-->
+<!--                value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--                type="daterange"-->
+<!--                start-placeholder="开始日期"-->
+<!--                end-placeholder="结束日期"-->
+<!--                :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--                class="!w-240px"-->
+<!--              />-->
+<!--            </el-form-item>-->
+<!--          </ElCol>-->
           <ElCol :offset="1" :span="6">
             <el-form-item>
               <el-button @click="handleQuery">

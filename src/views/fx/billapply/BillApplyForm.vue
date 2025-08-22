@@ -147,7 +147,7 @@
         <h3 class="section-title">购方信息</h3>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="开票信息" prop="billingInfo">
+            <el-form-item label="开票信息" prop="billingInfo" v-if="!isDetail">
               <div class="multi-select-container">
                 <el-button type="primary" @click="openBillingInfoTable" :disabled="isDetail">
                   选择开票信息
@@ -162,7 +162,7 @@
               </div>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="购方名称" prop="purchaserName">
               <el-input
                 v-model="formData.purchaserName"
@@ -171,7 +171,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="纳税人识别号" prop="taxNo">
               <el-input
                 v-model="formData.taxNo"
@@ -208,13 +208,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="发票附件" prop="document" :disabled="isDetail" v-if="isDetail">
+            <el-form-item label="发票附件" prop="document" v-if="isDetail">
               <!-- 限制最大5MB -->
               <UploadFile
                 v-model="formData.document"
                 width="200px"
                 height="200px"
                 :show-delete="true"
+                disabled="false"
               />
             </el-form-item>
           </el-col>
@@ -321,7 +322,8 @@ const formData = ref({
   email: undefined,
   emailId: undefined,
   isSend: undefined,
-  customerId: undefined
+  customerId: undefined,
+  salespersonId: undefined,
 })
 
 /** 表单校验规则 */
@@ -465,6 +467,22 @@ const openSaleTable = () => {
 const handleSaleSelectConfirm = async (selected: OrdersInfoVO[]) => {
   // 合并已选择项，避免重复
   formData.value.saleOrder = selected;
+  // 找到单据时间最晚的销售单并赋值creatorId给salespersonId
+  if (selected.length > 0) {
+    // 按单据时间降序排序，取第一个（最晚的）
+    const latestOrder = [...selected].sort((a, b) => {
+      // 处理日期比较（假设orderDate为ISO格式字符串或Date对象）
+      const dateA = new Date(a.orderDate as any).getTime();
+      const dateB = new Date(b.orderDate as any).getTime();
+      return dateB - dateA; // 降序排列
+    })[0];
+
+    // 将最晚单据的creatorId赋值给salespersonId
+    formData.value.salespersonId = latestOrder.creatorId;
+  } else {
+    // 若未选择销售单，清空salespersonId
+    formData.value.salespersonId = undefined;
+  }
   // 获取选中销售单的明细并设置到商品详情
   if (selected.length > 0) {
     try {
@@ -578,6 +596,7 @@ const open = async (type: string, id?: number) => {
     if (defaultUser) {
       formData.value.purchaserName = defaultUser.nickname
       formData.value.customerId = defaultUser.customerId
+      formData.value.cusName = defaultUser.nickname
     }
     // formData.value.applyDate = Date.now() // 新建时默认当前时间
     console.log('默认绑定的审核人数据：', formData.value.applyMan) // 确认前端绑定正确

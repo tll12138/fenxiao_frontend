@@ -28,6 +28,8 @@ export interface BillApplyVO {
   emailId: string // 关联邮箱
   isSend: number // 发票发送状态
   saleAmount: number // 销售金额
+  customerId: number // 客户id
+  salespersonId: number // 业务员id
 }
 
 // 发票申请 API

@@ -44,6 +44,7 @@ export interface OrdersInfoVO {
   receiveSupplierId?: number // 收款经销商
   distributorId?: number // 收货方
   businessBelong?: number // 业务归属
+  creatorId?: number // 业务员id
 }
 
 // 销售单 API
