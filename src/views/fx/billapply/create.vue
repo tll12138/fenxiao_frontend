@@ -229,7 +229,6 @@ import ConsigneeTable from "@/views/fx/ordersinfo/components/consigneeTable.vue"
 import { CustomerInfoApi, CustomerInfoVO } from "@/api/fx/customerinfo";
 import ConsigneeIcon from "@/views/fx/ordersinfo/components/ConsigneeIcon.vue";
 import { useTagsViewStore } from "@/store/modules/tagsView";
-import { onMounted, ref } from "vue";
 import {
   Document,
   DocumentAdd,
@@ -242,7 +241,6 @@ import * as UserApi from '@/api/system/user'
 import {BillApplyApi, BillApplyVO} from "@/api/fx/billapply";
 import {useUserStore} from "@/store/modules/user";
 import {OrdersInfoApi, OrdersInfoVO} from "@/api/fx/ordersinfo";
-import {EmailAddressApi, EmailAddressVO} from "@/api/fx/emailaddress";
 /** 销售单 表单 */
 defineOptions({ name: 'BillApplyForm' })
 

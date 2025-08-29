@@ -433,6 +433,16 @@ const remainingRouter: AppRouteRecordRaw[] = [
           title: '新增账户收款单',
         },
       },
+      {
+        path: '/fx/customeraccount/create',
+        component: () => import('@/views/fx/customeraccount/create.vue'),
+        name: 'CustomerAccountAuditForm',
+        meta: {
+          hidden: true,
+          noCache: true,
+          title: '新增账户收款单',
+        },
+      },
     ]
   },
 ]
